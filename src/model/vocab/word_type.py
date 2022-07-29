@@ -27,5 +27,17 @@ class WordType(Printable):
 
         return result
 
+    # def toJson(self) -> str:
+    #     return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
+
     def toJson(self) -> str:
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
+
+        definitions_in_json = '['
+
+        for definition in self.definitions:
+            definitions_in_json += f'{definition.toJson()},'
+
+        definitions_in_json = definitions_in_json.removesuffix(',')
+        definitions_in_json += ']'
+
+        return f'{{"type": "{self.type}", "definitions": {definitions_in_json}}}'

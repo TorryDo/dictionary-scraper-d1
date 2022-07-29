@@ -1,41 +1,28 @@
-import sys
 import time
 
-import wik_def_crawler as wik
-
-# print("choose folder to save txt file: ")
-#
-# folder_destination: str = input()
-#
-# print(folder_destination)
+import wik_def_scraper as wik
+from path.path import folder_path, scarped_words_file_name, words_file_path
+from src.model.vocab.vocab_list_in_json import VocabListInJson, Language
 
 start_time = time.time()
 
-folder_path = "C:\\Users\\trido\\Documents\\db\\dict\\eng-eng"
-file_name = "test_file.txt"
-file_path = f"{folder_path}/{file_name}"
-
+file_path = f"{folder_path}\\{scarped_words_file_name}"
 
 file = open(file_path, "w", encoding="utf-8")
-result: str = ""
 
-count = 0
-limit_word = 20
+vocab_list_in_json: VocabListInJson = VocabListInJson(language=Language.English)
 
-with open("../raw/words_alpha.txt") as f:
-    lines = [line.rstrip() for line in f]
-    for word in lines:
-        if count > limit_word:
-            break
-        vocab = wik.crawl_word(word)
 
-        result += str(vocab.toJson())
-        result += "\n"
+with open(words_file_path) as f:
+    words = [line.rstrip() for line in f]
 
-        count += 1
+    sub_words = words[0:1000]
 
-print(result)
+    vocab_list_in_json.words = wik.scrape_words(sub_words, accept_empty_word=False)
 
-file.write(result)
+
+print(vocab_list_in_json.toJson())
+
+file.write(vocab_list_in_json.toJson())
 
 print(f"\n<>Crawler took: {(time.time() - start_time).__round__(3)}s to run")

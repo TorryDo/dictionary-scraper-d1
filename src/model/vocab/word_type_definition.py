@@ -31,3 +31,15 @@ class WordTypeDefinition(Printable):
 
     def toJson(self) -> str:
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
+
+    # def toJson(self) -> str:
+    #
+    #     examples_in_json = '['
+    #
+    #     for example in self.examples:
+    #         examples_in_json += f'{example},'
+    #
+    #     examples_in_json = examples_in_json.removesuffix(',')
+    #     examples_in_json += ']'
+    #
+    #     return f'{{"definition": {self.definition}, "examples": {examples_in_json}}}'

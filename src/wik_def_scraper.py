@@ -1,18 +1,42 @@
-# wiktionary definition crawler
+# wiktionary definition scraper
 import json
 
 import requests
 from bs4 import BeautifulSoup
 
-from src.model.vocab.vocab import Vocab, Language
+from src.model.vocab.vocab import Vocab
 from src.model.vocab.word_type import WordType
 from src.model.vocab.word_type_definition import WordTypeDefinition
 
-base_word_url = "https://en.wiktionary.org/api/rest_v1/page/definition"
+base_def_url = "https://en.wiktionary.org/api/rest_v1/page/definition"
 
 
-def crawl_word(word: str) -> Vocab:
-    url = f"{base_word_url}/{word}"
+def scrape_words(
+        words: list[str],
+        on_each_word=None,
+        accept_empty_word: bool = True,
+) -> list[Vocab]:
+    #
+    vocab_list: list[Vocab] = []
+
+    for word in words:
+
+        vocab = scrape_word(word)
+
+        if accept_empty_word:
+            vocab_list.append(vocab)
+        else:
+            if len(vocab.word_type) > 0:
+                vocab_list.append(vocab)
+
+        if on_each_word is not None:
+            on_each_word(vocab)
+
+    return vocab_list
+
+
+def scrape_word(word: str) -> Vocab:
+    url = f"{base_def_url}/{word}"
     response = requests.get(url)
 
     res_json_str = response.text
@@ -54,6 +78,5 @@ def crawl_word(word: str) -> Vocab:
 
     return Vocab(
         word=word,
-        language=Language.English,
         word_type=type_list
     )

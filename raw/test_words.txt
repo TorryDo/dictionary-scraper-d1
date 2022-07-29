@@ -1,5 +1,8 @@
 hello
 star
 gold
-prolong
+diamond
 ghost
+none
+fly
+sky
