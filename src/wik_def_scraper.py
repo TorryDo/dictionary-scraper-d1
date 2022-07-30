@@ -9,6 +9,49 @@ from src.model.vocab.word_type import WordType
 from src.model.vocab.word_type_definition import WordTypeDefinition
 
 base_def_url = "https://en.wiktionary.org/api/rest_v1/page/definition"
+finished_words_file_path = "../files/cache/finished_words.txt"
+mined_words_file_path = "../files/data_mine/words.txt"
+
+check_words: list[str] = []
+check_words_file = open(finished_words_file_path, mode='a+', encoding='utf-8')
+check_words_file.seek(0)
+check_words_list = [line.rstrip() for line in check_words_file.readlines()]
+
+for word in check_words_list:
+    check_words.append(word)
+
+file_words = open(mined_words_file_path, "w", encoding="utf-8")
+
+if __name__ == "__main__":
+    print(check_words)
+
+    quit()
+
+
+def run_scraper(
+        words: list[str],
+        accept_empty_word: bool = True,
+) -> list[Vocab]:
+    filter_words = [x for x in words if x not in check_words]
+
+    result: list[Vocab] = []
+
+    if len(filter_words) == 0:
+        print("all words are scraped 😎")
+    else:
+        result = scrape_words(
+            words=filter_words,
+            accept_empty_word=accept_empty_word
+        )
+
+    cache_word: str = ''
+    for item in result:
+        cache_word += item.word
+        cache_word += '\n'
+
+    check_words_file.write(cache_word)
+
+    return result
 
 
 def scrape_words(
