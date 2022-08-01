@@ -1,5 +1,8 @@
 import asyncio
 import random
+import time
+
+from src.ext.def_to_async import to_async
 
 count = 0
 
@@ -11,13 +14,17 @@ for i in range(20):
 thr_num = 3
 
 
+def fake_task():
+    time.sleep(random.randrange(1, 4))
+
+
 async def do_task():
     try:
         if len(strList) == 0:
             print('end of list')
             return
 
-        await asyncio.sleep(random.randrange(1, 4))
+        await to_async(task=fake_task)
 
         if len(strList) > 0:
             print(strList[0])
@@ -27,12 +34,6 @@ async def do_task():
 
     except NameError:
         pass
-
-
-# async def func(num):
-#     print('Starting func {0}...'.format(num))
-#     await asyncio.sleep(1)
-#     print('Ending func {0}...'.format(num))
 
 
 loop = asyncio.get_event_loop()
