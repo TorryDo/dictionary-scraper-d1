@@ -44,3 +44,17 @@ class Vocab(Printable):
         types_in_json += ']'
 
         return f'{{"word": "{self.word}", "types": {types_in_json} }}'
+
+
+########################################################################################################################
+def to_array_json(vocab_list: list[Vocab]) -> str:
+    result = '['
+
+    for vocab in vocab_list:
+        result += vocab.toJson() + ','
+
+    result = result.removesuffix(',')
+    result += ']'
+
+    return result
+

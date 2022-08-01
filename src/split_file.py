@@ -1,11 +1,13 @@
 import os
+import shutil
 
-from src.base.file_helper import write_txt_file, read_each_line
+from src.base.base import root_dir
+from src.base.file_helper import write_txt_file, read_each_line, get_all_path_with_prefix
 
 
 def split_huge_text_file_to_multiple_smaller_file(
         source_path: str,
-        cache_splitter_dir_path: str = '../files/cache/splitter',
+        cache_splitter_dir_path: str = root_dir(child='/files/cache/splitter'),
         each_word_per_file: int = 500,
         prefix_each_file: str = '_'
 ):
@@ -14,11 +16,11 @@ def split_huge_text_file_to_multiple_smaller_file(
         words_path=source_path
     )
     if is_already_split:
-        print('this file is already split')
+        print('this file is already split, return')
         return
     else:
         if os.path.exists(cache_splitter_dir_path):
-            os.rmdir(cache_splitter_dir_path)
+            shutil.rmtree(cache_splitter_dir_path)
 
     word_list: list[str] = read_each_line(path=source_path)
 
@@ -48,6 +50,11 @@ def split_huge_text_file_to_multiple_smaller_file(
             f.write(temp)
 
     save_data_config = source_path + '\n'
+    all_path = get_all_path_with_prefix(
+        folder_path=root_dir(child='/files/cache/splitter'),
+        prefix='_'
+    )
+    save_data_config += str(len(all_path)) + '\n'
 
     succeed = write_config_file(
         file_path=f'{cache_splitter_dir_path}/config.txt',

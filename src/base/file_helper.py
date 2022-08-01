@@ -4,6 +4,28 @@ from typing import TextIO
 from src.base.base import root_dir
 
 
+def remove_file(path: str) -> bool:
+    try:
+        if os.path.isfile(path):
+            os.remove(path)
+            return True
+        else:
+            raise Exception(f'not a file, path is: {path}')
+    except NameError:
+        print(NameError)
+        return False
+
+
+def create_dir_if_not_exists(dir_path: str) -> bool:
+    try:
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+        return True
+    except NameError:
+        print(NameError)
+        return False
+
+
 def read_each_line(
         file: TextIO = None,
         path: str = None
@@ -49,7 +71,6 @@ def get_all_path_with_prefix(
 
 
 if __name__ == '__main__':
-
     folder_path = root_dir(child='/files/cache/splitter')
 
     all_path = get_all_path_with_prefix(
