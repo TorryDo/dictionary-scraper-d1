@@ -59,7 +59,7 @@ def scrape():
         loop = asyncio.get_event_loop()
         loop.run_until_complete(run_scraper(
             words_file_path=root_dir('/raw/words_alpha.txt'),
-            threads=4
+            threads=6
         ))
         loop.close()
     except NameError:
