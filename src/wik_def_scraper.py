@@ -1,7 +1,6 @@
 # wiktionary definition scraper
 import asyncio
 import json
-import os.path
 import shutil
 
 import requests
@@ -41,7 +40,28 @@ def scrape():
         prefix_each_file='_'
     )
 
+    move_all_from_temp_splitter_to_splitter_if_exists()
+
+    try:
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(run_scraper_in_parallel(
+            words_file_path=root_dir('/raw/words_alpha.txt'),
+            parallel=10
+        ))
+        loop.close()
+    except NameError:
+        print(NameError)
+
+    print('scrape finished')
+
+    on_finished()
+
+
+def move_all_from_temp_splitter_to_splitter_if_exists():
     previous_temp_file_words: list[str] = get_all_path_with_prefix(folder_path=temp_splitter_dir_path, prefix='_')
+
+    if len(previous_temp_file_words) == 0:
+        return
 
     while len(previous_temp_file_words) > 0:
         first_name = previous_temp_file_words[0]
@@ -55,34 +75,49 @@ def scrape():
             dst=dst_temp_word_file_path
         )
 
-    try:
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(run_scraper(
-            words_file_path=root_dir('/raw/words_alpha.txt'),
-            threads=6
-        ))
-        loop.close()
-    except NameError:
-        print(NameError)
 
-    print('scrape finished')
+def on_finished():
+    print('start concatenate files')
+
+    result: str = '['
+
+    temp_word_file_names = get_all_path_with_prefix(folder_path=root_dir('/files/cache/temp_data_mine'))
+
+    for word_file_name in temp_word_file_names:
+        full_path = temp_data_mine_dir_path + '/' + word_file_name
+        lines = read_each_line(path=full_path)
+        for line in lines:
+            result += line + '\n'
+
+    result = result.removesuffix(',\n')
+    result += ']'
+    print('finish concatenate files')
 
 
-async def run_scraper(
+async def run_scraper_in_parallel(
         words_file_path: str = words_alpha_txt,
         accept_empty_word: bool = True,
-        threads: int = 2,
+        parallel: int = 5,
         progress=None
 ):
     create_dir_if_not_exists(dir_path=temp_splitter_dir_path)
 
     split_word_file_name_list: list[str] = get_all_path_with_prefix(folder_path=splitter_dir_path, prefix='_')
 
+    if len(split_word_file_name_list) == 0:
+        print('job finished')
+        return
+
     while len(split_word_file_name_list) > 0:
-        # should put it in loop
+
+        move_all_from_temp_splitter_to_splitter_if_exists()
 
         tasks = list()
-        for _ in range(threads):
+        for _ in range(parallel):
+
+            if len(split_word_file_name_list) == 0:
+                break
+
             first_name = split_word_file_name_list[0]
             split_word_file_name_list.pop(0)
 
@@ -96,18 +131,6 @@ async def run_scraper(
                 temp_data_mine_path=temp_data_mine_file_path
             )))
         await asyncio.wait(tasks)
-
-
-async def do_scrape_loop(name: str):
-    src_temp_word_file_path = splitter_dir_path + '/' + name
-    dst_temp_word_file_path = temp_splitter_dir_path + '/' + name
-    temp_data_mine_file_path = temp_data_mine_dir_path + '/' + name
-
-    await scrape_word_then_move_file(
-        src_path=src_temp_word_file_path,
-        dst_path=dst_temp_word_file_path,
-        temp_data_mine_path=temp_data_mine_file_path
-    )
 
 
 async def scrape_word_then_move_file(
@@ -136,9 +159,6 @@ async def scrape_word_then_move_file(
         return True
     except NameError:
         print(NameError)
-        if os.path.exists(dst_path):
-            shutil.move(src=dst_path, dst=src_path)
-            print(f'moved dst: {dst_path} -to- src{src_path} due to exception')
         return False
 
 

@@ -4,18 +4,6 @@ from typing import TextIO
 from src.base.base import root_dir
 
 
-def move_file(src: str, dst: str) -> bool:
-    try:
-        if os.path.isfile(path):
-            os.remove(path)
-            return True
-        else:
-            raise Exception(f'not a file, path is: {path}')
-    except NameError:
-        print(NameError)
-        return False
-
-
 def remove_file(path: str) -> bool:
     try:
         if os.path.isfile(path):
@@ -57,7 +45,7 @@ def read_each_line(
 
 
 def write_txt_file(path: str, data: str) -> bool:
-    print(path)
+    print(f'write file{path}')
 
     try:
         file = open(path, mode='w', encoding='utf-8')
