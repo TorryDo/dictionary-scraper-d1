@@ -45,7 +45,6 @@ def read_each_line(
 
 
 def write_txt_file(path: str, data: str) -> bool:
-    print(f'write file{path}')
 
     try:
         file = open(path, mode='w', encoding='utf-8')

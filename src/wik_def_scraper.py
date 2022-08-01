@@ -1,7 +1,10 @@
 # wiktionary definition scraper
 import asyncio
 import json
+import os.path
 import shutil
+import threading
+import time
 
 import requests
 from bs4 import BeautifulSoup
@@ -22,19 +25,45 @@ from src.split_file import split_huge_text_file_to_multiple_smaller_file
 
 base_def_url = "https://en.wiktionary.org/api/rest_v1/page/definition"
 
-words_alpha_txt = root_dir('/raw/words_alpha.txt')
+words_file_path = ''
 
-splitter_dir_path = root_dir(child='/files/cache/splitter')
-config_file_path = splitter_dir_path + '/config.txt'
-temp_splitter_dir_path = root_dir(child='/files/cache/temp_splitter')
+config_file_path = ''
+splitter_dir_path = ''
+temp_splitter_dir_path = ''
 
-temp_data_mine_dir_path = root_dir(child='/files/cache/temp_data_mine')
-data_mine_dir_path = root_dir(child='/files/data_mine')
+data_mine_dir_path = ''
+temp_data_mine_dir_path = ''
+
+total_file_word = 0
 
 
-def scrape():
+def scrape(
+        word_file_path: str,
+        cache_dir_path: str,
+        result_data_dir_path: str,
+        accept_empty_word: bool = False,
+        parallel: int = 5,
+):
+    global words_file_path
+    global config_file_path
+    global splitter_dir_path
+    global temp_splitter_dir_path
+    global data_mine_dir_path
+    global temp_data_mine_dir_path
+    global total_file_word
+
+    words_file_path = word_file_path
+    splitter_dir_path = cache_dir_path + '/splitter'
+    temp_splitter_dir_path = cache_dir_path + '/temp_splitter'
+    config_file_path = splitter_dir_path + '/config.txt'
+    data_mine_dir_path = result_data_dir_path
+    temp_data_mine_dir_path = cache_dir_path + '/temp_data_mine'
+
+    if os.path.exists(config_file_path):
+        total_file_word = int(read_each_line(path=config_file_path)[1])
+
     split_huge_text_file_to_multiple_smaller_file(
-        source_path=words_alpha_txt,
+        source_path=words_file_path,
         _splitter_dir_path=splitter_dir_path,
         each_word_per_file=200,
         prefix_each_file='_'
@@ -42,12 +71,21 @@ def scrape():
 
     move_all_from_temp_splitter_to_splitter_if_exists()
 
+    remained_file = get_all_path_with_prefix(splitter_dir_path, '_')
+    if len(remained_file) == 0:
+        print('task finished')
+        on_finished()
+        return
+
+    threading.Thread(target=lambda: calc_progress()).start()
+
     try:
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(run_scraper_in_parallel(
-            words_file_path=root_dir('/raw/words_alpha.txt'),
-            parallel=10
-        ))
+        loop.run_until_complete(
+            future=run_scraper_in_parallel(
+                accept_empty_word=accept_empty_word,
+                parallel=parallel
+            ))
         loop.close()
     except NameError:
         print(NameError)
@@ -55,6 +93,92 @@ def scrape():
     print('scrape finished')
 
     on_finished()
+
+
+def on_finished():
+    start_time = time.time()
+
+    print('start concatenate files, please wait...')
+
+    count = 0
+
+    temp_word_file_names = get_all_path_with_prefix(folder_path=root_dir('/files/cache/temp_data_mine'), prefix='_')
+
+    total_words = read_each_line(path=words_file_path)
+
+    scraped_words = set()
+
+    scraped_words_json = []
+
+    result: str = ''
+
+    scrape_word_file = root_dir('/files/cache/temp_data_mine/words.txt')
+    if os.path.exists(scrape_word_file):
+        print('os path exists')
+        scraped_words_json = read_each_line(path=scrape_word_file)
+        for w in scraped_words_json:
+            result += w + '\n'
+            word = json.loads(w.removesuffix('\n').removesuffix(','))['word']
+            scraped_words.add(word)
+
+    else:
+        for word_file_name in temp_word_file_names:
+            full_path = temp_data_mine_dir_path + '/' + word_file_name
+            lines = read_each_line(path=full_path)
+            for line in lines:
+                result += line + '\n'
+                count += 1
+                word = json.loads(line.removesuffix('\n').removesuffix(','))['word']
+                scraped_words.add(word)
+
+        result = result.removesuffix('\n')
+
+        write_txt_file(path=scrape_word_file, data=result)
+
+    error_words = [item for item in total_words if item not in scraped_words]
+
+    error_words_data = ''
+    for error_word in error_words:
+        error_words_data += error_word + '\n'
+    error_words_data = error_words_data.removesuffix('\n')
+
+    write_txt_file(path=root_dir(child='/files/data_mine/error_words.txt'), data=error_words_data)
+
+    final = '{"language": "eng", "words":['
+
+    result = result.removesuffix('\n').removesuffix(',')
+
+    final += result
+
+    final += ']}'
+
+    write_txt_file(path=root_dir(child='/files/data_mine/words.txt'), data=final)
+
+    print(f'total word = {len(total_words)}')
+    print(f'scraped word = {len(scraped_words)}')
+    print(f'error word = {len(error_words)}')
+    print(f'finish concatenate files, took: {round(time.time() - start_time, ndigits=3)}s')
+
+
+def calc_progress():
+    old_result: float = 0
+
+    while old_result < 0.99:
+        if total_file_word == 0:
+            time.sleep(15)
+            continue
+
+        current = len(get_all_path_with_prefix(folder_path=temp_data_mine_dir_path, prefix='_'))
+
+        result = round(number=(current / total_file_word), ndigits=2)
+
+        if result > old_result:
+            print(f'progress = {result}')
+            old_result = result
+
+        time.sleep(15)
+
+    print('finalizing...')
 
 
 def move_all_from_temp_splitter_to_splitter_if_exists():
@@ -76,29 +200,9 @@ def move_all_from_temp_splitter_to_splitter_if_exists():
         )
 
 
-def on_finished():
-    print('start concatenate files')
-
-    result: str = '['
-
-    temp_word_file_names = get_all_path_with_prefix(folder_path=root_dir('/files/cache/temp_data_mine'))
-
-    for word_file_name in temp_word_file_names:
-        full_path = temp_data_mine_dir_path + '/' + word_file_name
-        lines = read_each_line(path=full_path)
-        for line in lines:
-            result += line + '\n'
-
-    result = result.removesuffix(',\n')
-    result += ']'
-    print('finish concatenate files')
-
-
 async def run_scraper_in_parallel(
-        words_file_path: str = words_alpha_txt,
-        accept_empty_word: bool = True,
-        parallel: int = 5,
-        progress=None
+        accept_empty_word: bool,
+        parallel: int = 5
 ):
     create_dir_if_not_exists(dir_path=temp_splitter_dir_path)
 
@@ -128,7 +232,8 @@ async def run_scraper_in_parallel(
             tasks.append(asyncio.create_task(scrape_word_then_move_file(
                 src_path=src_temp_word_file_path,
                 dst_path=dst_temp_word_file_path,
-                temp_data_mine_path=temp_data_mine_file_path
+                temp_data_mine_path=temp_data_mine_file_path,
+                accept_empty_word=accept_empty_word
             )))
         await asyncio.wait(tasks)
 
@@ -136,14 +241,15 @@ async def run_scraper_in_parallel(
 async def scrape_word_then_move_file(
         src_path: str,
         dst_path: str,
-        temp_data_mine_path: str
+        temp_data_mine_path: str,
+        accept_empty_word: bool
 ) -> bool:
     try:
         shutil.move(src=src_path, dst=dst_path)
 
         vocab_list: list[Vocab] = await to_async(task=lambda: scrape_words(
             words=read_each_line(path=dst_path),
-            accept_empty_word=False
+            accept_empty_word=accept_empty_word
         ))
 
         temp_rs = ''
@@ -158,30 +264,29 @@ async def scrape_word_then_move_file(
 
         return True
     except NameError:
-        print(NameError)
+        # print(f'error at word file: {src_path}')
+        # print(NameError)
         return False
 
 
 def scrape_words(
         words: list[str],
-        on_each_word=None,
         accept_empty_word: bool = True,
 ) -> list[Vocab]:
     #
     vocab_list: list[Vocab] = []
 
     for word in words:
+        try:
+            vocab = scrape_word(word)
 
-        vocab = scrape_word(word)
-
-        if accept_empty_word:
-            vocab_list.append(vocab)
-        else:
-            if len(vocab.word_type) > 0:
+            if accept_empty_word:
                 vocab_list.append(vocab)
-
-        if on_each_word is not None:
-            on_each_word(vocab)
+            else:
+                if len(vocab.word_type) > 0:
+                    vocab_list.append(vocab)
+        except NameError:
+            continue
 
     return vocab_list
 
@@ -189,6 +294,10 @@ def scrape_words(
 def scrape_word(word: str) -> Vocab:
     url = f"{base_def_url}/{word}"
     response = requests.get(url)
+
+    if response.status_code == 404:
+        print(f'word 404: {word}')
+        return Vocab(word=word)
 
     res_json_str = response.text
 
@@ -232,6 +341,11 @@ def scrape_word(word: str) -> Vocab:
         word_type=type_list
     )
 
-
-if __name__ == '__main__':
-    scrape()
+# if __name__ == '__main__':
+#     scrape(
+#         word_file_path=root_dir(child='/raw/words_alpha.txt'),
+#         cache_dir_path=root_dir(child='/files/cache'),
+#         result_data_dir_path=root_dir(child='/files/data_mine'),
+#         accept_empty_word=False,
+#         parallel=10
+#     )
