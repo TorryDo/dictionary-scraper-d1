@@ -4,6 +4,7 @@ import json
 import shutil
 import threading
 import time
+import warnings
 
 import requests
 from bs4 import BeautifulSoup
@@ -42,6 +43,10 @@ def scrape(
         parallel: int = 5,
 ):
     # check if file satisfy condition
+
+    word_file_path = word_file_path.replace('\\', '/')
+    workspace_dir_path = workspace_dir_path.replace('\\', '/')
+
     if not is_exist(word_file_path):
         raise Exception(f'file words: "{word_file_path}" is not exist')
     if not is_exist(path=workspace_dir_path):
@@ -90,6 +95,8 @@ def scrape(
         )
         print('split file success')
 
+    warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
+
     total_file_word = int(read_each_line(path=config_file_path)[1])
 
     move_all_from_temp_splitter_to_splitter_if_exists()
@@ -100,7 +107,7 @@ def scrape(
         on_finished()
         return
 
-    threading.Thread(target=lambda: calc_progress()).start()
+    threading.Thread(target=calc_progress).start()
 
     try:
         loop = asyncio.get_event_loop()
@@ -126,12 +133,14 @@ def on_finished():
     scraped_words = set()
     error_words = list[str]()
 
-    if is_exist(result_words_txt) or is_exist(result_error_words_txt):
+    if is_exist(result_words_txt) and is_exist(result_error_words_txt):
+
         error_words = read_each_line(path=result_error_words_txt)
         scraped_words = read_each_line(result_words_txt)
 
         scraped_words.pop(0)
         scraped_words.pop(len(scraped_words) - 1)
+
     else:
 
         start_time = time.time()
@@ -165,8 +174,7 @@ def on_finished():
 
         write_txt_file(path=result_error_words_txt, data=error_words_data)
         print(f'finish concatenate files, took: {round(time.time() - start_time, ndigits=3)}s')
-    #
-    #
+
     #
 
     print(f'total word = {len(total_words)}')
@@ -177,7 +185,7 @@ def on_finished():
 def calc_progress():
     old_result: float = 0
 
-    while old_result < 0.99:
+    while old_result <= 0.99:
         if total_file_word == 0:
             time.sleep(15)
             continue
@@ -187,7 +195,7 @@ def calc_progress():
         result = round(number=(current / total_file_word), ndigits=2)
 
         if result > old_result:
-            print(f'progress = {result}')
+            print(f'progress: {int(result * 100)}/100')
             old_result = result
 
         time.sleep(15)
@@ -278,8 +286,6 @@ async def scrape_word_then_move_file(
 
         return True
     except NameError:
-        # print(f'error at word file: {src_path}')
-        # print(NameError)
         return False
 
 
