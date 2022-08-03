@@ -1,28 +1,27 @@
 import os
-import shutil
 
 from src.base.base import root_dir
-from src.base.file_helper import write_txt_file, read_each_line, get_all_path_with_prefix
+from src.ext.file_helper import write_txt_file, read_each_line, get_all_path_with_prefix
 
 
 def split_huge_text_file_to_multiple_smaller_file(
-        source_path: str,
-        _splitter_dir_path: str = root_dir(child='/files/cache/splitter'),
-        each_word_per_file: int = 500,
+        words_file_path: str,
+        dst_dir_path: str,
+        each_word_per_file: int = 200,
         prefix_each_file: str = '_'
 ):
-    is_already_split = is_file_already_split(
-        config_path=f'{_splitter_dir_path}/config.txt',
-        words_path=source_path
-    )
-    if is_already_split:
-        print('this file is already split, return')
-        return
-    else:
-        if os.path.exists(_splitter_dir_path):
-            shutil.rmtree(_splitter_dir_path)
+    # is_already_split = is_file_already_split(
+    #     config_path=f'{dst_dir_path}/config.txt',
+    #     words_path=source_path
+    # )
+    # if is_already_split:
+    #     print('this file is already split, return')
+    #     return
+    # else:
+    #     if os.path.exists(dst_dir_path):
+    #         shutil.rmtree(dst_dir_path)
 
-    word_list: list[str] = read_each_line(path=source_path)
+    word_list: list[str] = read_each_line(path=words_file_path)
 
     count = 0
 
@@ -40,31 +39,21 @@ def split_huge_text_file_to_multiple_smaller_file(
         if len(temp_list) == 0:
             break
 
-        if not os.path.exists(_splitter_dir_path):
-            os.makedirs(_splitter_dir_path)
+        if not os.path.exists(dst_dir_path):
+            os.makedirs(dst_dir_path)
 
-        with open(_splitter_dir_path + f'/{prefix_each_file}{count}.txt', mode='w', encoding='utf-8') as f:
+        with open(dst_dir_path + f'/{prefix_each_file}{count}.txt', mode='w', encoding='utf-8') as f:
             temp = ''
             for word in temp_list:
                 temp += f'{word}\n'
             f.write(temp)
 
-    save_data_config = source_path + '\n'
-    all_path = get_all_path_with_prefix(
-        folder_path=root_dir(child='/files/cache/splitter'),
-        prefix='_'
-    )
-    save_data_config += str(len(all_path)) + '\n'
 
-    succeed = write_config_file(
-        file_path=f'{_splitter_dir_path}/config.txt',
-        data=save_data_config
-    )
 
-    if succeed:
-        print('save split succeed')
-    else:
-        print('save error')
+    # if succeed:
+    #     print('save split succeed')
+    # else:
+    #     print('save error')
 
 
 def write_config_file(

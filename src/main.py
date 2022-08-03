@@ -6,8 +6,7 @@ vocab_list_in_json: VocabListInJson = VocabListInJson(language=Language.English)
 
 wik.scrape(
     word_file_path=root_dir(child='/raw/words_alpha.txt'),
-    cache_dir_path=root_dir(child='/files/cache'),
-    result_data_dir_path=root_dir(child='/files/data_mine'),
+    workspace_dir_path=root_dir(child='/files/cache'),
     accept_empty_word=False,
     parallel=10
 )
