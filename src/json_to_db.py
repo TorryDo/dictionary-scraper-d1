@@ -31,3 +31,4 @@ def json_to_db(db_file_path: str):
 
 if __name__ == '__main__':
     json_to_db(db_file_path='C:/Users/trido/Desktop/scrape/wiktionary/eng_words_id.db')
+

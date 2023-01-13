@@ -1,4 +1,3 @@
-# wiktionary definition scraper
 import asyncio
 import json
 import shutil
@@ -38,7 +37,7 @@ total_file_word = 0
 
 def scrape(
         word_file_path: str,
-        workspace_dir_path: str,
+        workspace_dir_path: str = '',
         accept_empty_word: bool = False,
         parallel: int = 5,
 ):
@@ -89,11 +88,12 @@ def scrape(
         )
         config_data += str(len(file_number)) + '\n'
 
+        # should change this function later
         write_config_file(
             file_path=config_file_path,
             data=config_data
         )
-        print('split file success')
+        print('split file succeed')
 
     warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
 
@@ -239,6 +239,7 @@ async def run_scraper_in_parallel(
         move_all_from_temp_splitter_to_splitter_if_exists()
 
         tasks = list()
+
         for _ in range(parallel):
 
             if len(split_word_file_name_list) == 0:

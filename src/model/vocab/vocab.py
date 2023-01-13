@@ -57,4 +57,3 @@ def to_array_json(vocab_list: list[Vocab]) -> str:
     result += ']'
 
     return result
-
