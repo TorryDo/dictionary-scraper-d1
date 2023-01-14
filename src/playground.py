@@ -27,4 +27,5 @@ async def main():
 
 
 if __name__ == '__main__':
-   Path(FileHelper.current_dir('hello')).mkdir()
+
+    pass

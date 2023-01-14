@@ -5,14 +5,16 @@ from pathlib import Path
 class FileHelper:
 
     @staticmethod
-    def mkdir(path: str, parents=True, exist_ok=True):
-        abspath = FileHelper.current_dir(path)
-        Path(abspath).mkdir(parents=parents, exist_ok=exist_ok)
+    def mkdir(path: str):
+        # abspath = FileHelper.current_dir(path)
+        # Path(abspath).mkdir(parents=parents, exist_ok=exist_ok)
+        os.mkdir(path)
 
     @staticmethod
     def rmdir(path: str):
-        abspath = FileHelper.current_dir(path)
-        Path(abspath).rmdir()
+        # abspath = FileHelper.current_dir(path)
+        # Path(abspath).rmdir()
+        os.rmdir(path)
 
     @staticmethod
     def current_dir(child: str = None) -> str:
