@@ -1,5 +1,8 @@
 import asyncio
 import time
+from pathlib import Path
+
+from src.utils.FileHelper import FileHelper
 
 
 # for i in tqdm(range(0, 100), desc="scraping", unit='mb'):
@@ -24,4 +27,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+   Path(FileHelper.current_dir('hello')).mkdir()

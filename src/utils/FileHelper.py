@@ -1,16 +1,32 @@
 import os.path
+from pathlib import Path
 
 
 class FileHelper:
 
     @staticmethod
+    def mkdir(path: str, parents=True, exist_ok=True):
+        abspath = FileHelper.current_dir(path)
+        Path(abspath).mkdir(parents=parents, exist_ok=exist_ok)
+
+    @staticmethod
+    def rmdir(path: str):
+        abspath = FileHelper.current_dir(path)
+        Path(abspath).rmdir()
+
+    @staticmethod
     def current_dir(child: str = None) -> str:
-        result = ''
+        result: str = ''
 
         result += os.path.abspath(os.curdir).replace('\\', '/')
 
         if child is not None:
-            result += child
+            dot2slash = '../'
+            while child.startswith(dot2slash):
+                last_slash_pos = result.rfind('/')
+                result = result[:last_slash_pos]
+                child = child.removeprefix(dot2slash)
+            result += '/' + child
 
         return result
 
@@ -20,22 +36,19 @@ class FileHelper:
 
     @staticmethod
     def is_dir(path: str) -> bool:
-        pass
+        return os.path.isdir(path)
 
     @staticmethod
     def is_existed(path: str) -> bool:
         return os.path.exists(path)
 
     @staticmethod
-    def children(dir_path: str) -> list[str]:
-        if not os.path.exists(dir_path):
-            raise Exception(f'Path "{dir_path}" not exists')
+    def children(dir_path: str = None) -> list[str]:
+        path = FileHelper.current_dir(dir_path)
+        if not os.path.exists(path):
+            raise Exception(f'Path "{path}" not exists')
 
-        return os.listdir(dir_path)
-
-    @staticmethod
-    def is_empty_directory():
-        pass
+        return os.listdir(path)
 
     @staticmethod
     def create_file(path: str, encoding='utf-8'):
@@ -48,9 +61,17 @@ class FileHelper:
         try:
             file = open(path, mode='w', encoding=encoding)
             file.write(data)
+            file.close()
             return True
         except NameError:
             return False
+
+    @staticmethod
+    def read_file(path: str, encoding='utf-8') -> str:
+        file = open(path, mode='r', encoding=encoding)
+        result = file.read()
+        file.close()
+        return result
 
     @staticmethod
     def split_each_line(path: str) -> list[str]:
@@ -59,6 +80,8 @@ class FileHelper:
         text = _file.readlines()
         for word in [line.rstrip() for line in text]:
             l.append(word)
+
+        _file.close()
         return l
 
     @staticmethod
@@ -70,5 +93,5 @@ class FileHelper:
 
 
 if __name__ == '__main__':
-    paths = FileHelper.split_each_line(FileHelper.current_dir('/raw/test_words.txt'))
-    print(paths)
+    curidr = FileHelper.current_dir()
+    print(curidr)
