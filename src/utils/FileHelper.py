@@ -1,20 +1,16 @@
 import os.path
-from pathlib import Path
+import shutil
 
 
 class FileHelper:
 
     @staticmethod
-    def mkdir(path: str):
-        # abspath = FileHelper.current_dir(path)
-        # Path(abspath).mkdir(parents=parents, exist_ok=exist_ok)
-        os.mkdir(path)
+    def make_dirs(path: str, exist_ok=True):
+        os.makedirs(path)
 
     @staticmethod
-    def rmdir(path: str):
-        # abspath = FileHelper.current_dir(path)
-        # Path(abspath).rmdir()
-        os.rmdir(path)
+    def remove_dirs(path: str):
+        shutil.rmtree(path)
 
     @staticmethod
     def current_dir(child: str = None) -> str:
@@ -45,8 +41,13 @@ class FileHelper:
         return os.path.exists(path)
 
     @staticmethod
-    def children(dir_path: str = None) -> list[str]:
-        path = FileHelper.current_dir(dir_path)
+    def children(from_current: str = None, from_root: str = None) -> list[str]:
+        path: str
+        if from_root is not None:
+            path = from_root
+        else:
+            path = FileHelper.current_dir(from_current)
+
         if not os.path.exists(path):
             raise Exception(f'Path "{path}" not exists')
 
@@ -56,7 +57,6 @@ class FileHelper:
     def create_file(path: str, encoding='utf-8'):
         f = open(path, mode='x', encoding=encoding)
         f.close()
-        print(f.errors)
 
     @staticmethod
     def write_text_file(path: str, data: str, encoding='utf-8') -> bool:

@@ -72,27 +72,31 @@ class TestFileHelper(TestCase):
         print(children)
         self.assertTrue(len(children) > 0)
 
-    def test_mkdir(self):
+    def test_make_dirs(self):
         ip1 = 'testdir'
         ip2 = FileHelper.current_dir('testdir2')
         ip3 = 'testdir3/rdir3'
         print(ip2)
-        FileHelper.mkdir(ip1)
-        FileHelper.mkdir(ip2)
+        FileHelper.make_dirs(ip1)
+        FileHelper.make_dirs(ip2)
         expect_true = FileHelper.is_existed(ip1)
         expect_true2 = FileHelper.is_existed(ip2)
         self.assertTrue(expect_true)
         self.assertTrue(expect_true2)
-        FileHelper.rmdir(ip1)
-        FileHelper.rmdir(ip2)
+        FileHelper.remove_dirs(ip1)
+        FileHelper.remove_dirs(ip2)
 
         expect_false = FileHelper.is_existed(ip1)
         expect_false2 = FileHelper.is_existed(ip2)
         self.assertFalse(expect_false)
         self.assertFalse(expect_false2)
 
-    def test_rmdir(self):
-        self.fail()
+    def test_remove_dirs(self):
+        test_dir = 'dir1/dir2/dir3'
+        FileHelper.make_dirs(test_dir)
+        self.assertTrue(FileHelper.is_existed(test_dir))
+        FileHelper.remove_dirs(test_dir)
+        self.assertFalse(FileHelper.is_existed(test_dir))
 
     def test_write_text_file(self):
         data = 'hello im a text'
