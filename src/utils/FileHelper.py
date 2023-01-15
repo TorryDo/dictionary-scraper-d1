@@ -6,7 +6,7 @@ class FileHelper:
 
     @staticmethod
     def make_dirs(path: str, exist_ok=True):
-        os.makedirs(path)
+        os.makedirs(path, exist_ok=exist_ok)
 
     @staticmethod
     def remove_dirs(path: str):

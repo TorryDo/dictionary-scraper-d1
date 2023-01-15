@@ -1,11 +1,8 @@
-import wik_def_scraper as wik
-from src.model.vocab.vocab_list_in_json import VocabListInJson, Language
+from src.scraper.manage_scraper import manage_scraper
+from src.utils.FileHelper import FileHelper
 
-vocab_list_in_json: VocabListInJson = VocabListInJson(language=Language.English)
-
-wik.scrape(
-    word_file_path='C:\\Users\\trido\\Desktop\\scrape\\wiktionary\\words_alpha.txt',
-    workspace_dir_path='C:\\Users\\trido\\Desktop\\scrape\\wiktionary\\cache',
-    accept_empty_word=False,
-    parallel=8
-)
+if __name__ == '__main__':
+    manage_scraper(
+        word_filepath=FileHelper.current_dir('../raw/words_alpha.txt'),
+        workspace_directory=FileHelper.current_dir('../workspace'),
+    )
