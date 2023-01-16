@@ -6,12 +6,14 @@ from src.utils.JsonHelper import JsonHelper
 
 class TestJsonHelper(TestCase):
     _test_json: str = FileHelper.read_file('../../assets/data/test_json.txt')
+    _test_json1: str = '{}'  # {"word": "hello"}
 
     def test_str2dict(self):
         cock: dict = JsonHelper.str2dict(self._test_json)
-        expect_true = cock['en'][0]['language'] == 'English'
+        cock1: dict = JsonHelper.str2dict(self._test_json1)
 
-        self.assertTrue(expect_true)
+        self.assertTrue(cock['en'][0]['language'] == 'English')
+        self.assertTrue(len(cock1) == 0)
 
     def test_dict2json(self):
         _test_dict: dict = JsonHelper.str2dict(self._test_json)
