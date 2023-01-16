@@ -118,7 +118,7 @@ fork
         path = 'test_write_text_file.txt'
         FileHelper.write_text_file(path, data)
 
-        read = FileHelper.split_each_line(path)
+        read = FileHelper.lines(path)
         print(read)
         expect_true = len(read) == 5
         self.assertTrue(expect_true)

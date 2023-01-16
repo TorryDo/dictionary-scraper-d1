@@ -10,7 +10,7 @@ def split_to_smaller_word_file(
         rmdir_if_exists=False
 ) -> dict:
     cock = dict()
-    word_list: list[str] = FileHelper.split_each_line(word_filepath)
+    word_list: list[str] = FileHelper.lines(word_filepath)
     count = 0
 
     if FileHelper.is_existed(dst_dir):

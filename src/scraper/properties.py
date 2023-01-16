@@ -10,6 +10,7 @@ class ScraperProps:
     wip_dir: str
     extract_words_dir: str
     split_words_dir: str
+    scrape_queue_dir: str
 
     in_progress = None
     on_finished = None

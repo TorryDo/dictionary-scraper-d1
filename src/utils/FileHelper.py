@@ -76,7 +76,7 @@ class FileHelper:
         return result
 
     @staticmethod
-    def split_each_line(path: str) -> list[str]:
+    def lines(path: str) -> list[str]:
         l: list[str] = []
         _file = open(path, mode='r', encoding='utf-8')
         text = _file.readlines()

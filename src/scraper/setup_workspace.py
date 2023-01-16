@@ -19,6 +19,7 @@ def _setup_workspace(workspace_dir: str):
     ScraperProps.wip_dir = workspace_dir + '/wip'
     ScraperProps.extract_words_dir = ScraperProps.wip_dir + '/extract_words'
     ScraperProps.split_words_dir = ScraperProps.wip_dir + '/split_words'
+    ScraperProps.scrape_queue_dir = ScraperProps.wip_dir + '/scrape_queue'
 
     FileHelper.make_dirs(ScraperProps.result_dir)
     FileHelper.make_dirs(ScraperProps.error_words_dir)
@@ -27,3 +28,4 @@ def _setup_workspace(workspace_dir: str):
     FileHelper.make_dirs(ScraperProps.wip_dir)
     FileHelper.make_dirs(ScraperProps.extract_words_dir)
     FileHelper.make_dirs(ScraperProps.split_words_dir)
+    FileHelper.make_dirs(ScraperProps.scrape_queue_dir)
