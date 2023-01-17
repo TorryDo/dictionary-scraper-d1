@@ -130,7 +130,7 @@ async def _scrape_words_then_move_file(
         vocabs: list[Vocab] = []
         error_words: list[str] = []
         for word in words:
-            vocab = scrape_wiktionary_word(word)
+            vocab = await scrape_wiktionary_word(word)
             if vocab is not None:
                 vocabs.append(vocab)
                 if ScraperProps.in_progress is not None:
@@ -154,7 +154,7 @@ async def _scrape_words_then_move_file(
         FileHelper.delete_file(path=dst)
 
         if ScraperProps.in_progress is not None:
-            ScraperProps.in_progress(scraped_word_number=len(vocabs))
+            ScraperProps.in_progress(scraped_word_number_in_file=len(vocabs))
 
 
 def navigate_routes_from_config_data(

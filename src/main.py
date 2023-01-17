@@ -5,31 +5,35 @@ from src.scraper.properties import ConfigData, ConfigKeys
 from src.utils.FileHelper import FileHelper
 
 _progress = tqdm(desc='Scraping', unit='word')
-_current_word: int
+_current_scraped_word_number: int
 
 
 def on_start():
-    print('main on start')
+    print('start scraping ...')
     total_word_number = ConfigData.get().get(ConfigKeys.word_number)
 
-    global _current_word
-    _current_word = ConfigData.get().get(ConfigKeys.scrape_word_number)
-    _progress.total = total_word_number
-    _progress.update(_current_word)
+    global _current_scraped_word_number
+    _current_scraped_word_number = ConfigData.get().get(ConfigKeys.scrape_word_number)
+
     print(f'total_word_number = {total_word_number}')
-    print(f'current_word_number = {_current_word}')
+    print(f'current_word_number = {_current_scraped_word_number}')
+
+    _progress.n = _current_scraped_word_number
+    _progress.refresh()
+    _progress.total = total_word_number
 
 
 # if single word scraped, this function is called
 def in_progress(**kwargs):
-    global _current_word
-    scraped_word_number = kwargs.get('scraped_word_number')
+    global _current_scraped_word_number
+    scraped_word_number = kwargs.get('scraped_word_number_in_file')
     if scraped_word_number is not None and scraped_word_number > 0:
         ConfigData.get()[ConfigKeys.scrape_word_number] += scraped_word_number
         ConfigData.save()
         return
-    _current_word += 1
-    _progress.update(_current_word)
+    _current_scraped_word_number += 1
+    _progress.n = _current_scraped_word_number
+    _progress.refresh()
 
 
 def on_finished():

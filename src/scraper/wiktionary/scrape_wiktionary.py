@@ -1,6 +1,6 @@
 from typing import Optional
 
-import requests
+import aiohttp
 from bs4 import BeautifulSoup
 
 from src.model.vocab.vocab import Vocab
@@ -14,20 +14,30 @@ def _word_url(word: str) -> str:
     return f'{base_url}/{word}'
 
 
-def scrape_wiktionary_word(
+async def scrape_wiktionary_word(
         word: str,
         on_status_code=None,
 ) -> Optional[Vocab]:
     url = _word_url(word)
-    response = requests.get(url)
+    # response = requests.get(url)
 
-    if response.status_code >= 400:
-        if on_status_code is not None:
-            on_status_code()
-        return None
+    # if response.status_code >= 400:
+    #     if on_status_code is not None:
+    #         on_status_code()
+    #     return None
+
+    response: str
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as res:
+            if res.status >= 400:
+                if on_status_code is not None:
+                    on_status_code()
+                return None
+            response = await res.text()
 
     # remove tag inside text
-    json_data = BeautifulSoup(response.text, "html.parser").text
+    json_data = BeautifulSoup(response, "html.parser").text
 
     # start scrape content
     cock = JsonHelper.str2dict(json_data)
