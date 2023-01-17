@@ -4,7 +4,7 @@ from src.scraper.manage_scraper import manage_scraper
 from src.scraper.properties import ConfigData, ConfigKeys
 from src.utils.FileHelper import FileHelper
 
-_progress = tqdm(desc='Scraping', unit='word')
+_progress = None
 _current_scraped_word_number: int
 
 
@@ -18,9 +18,13 @@ def on_start():
     print(f'total_word_number = {total_word_number}')
     print(f'current_word_number = {_current_scraped_word_number}')
 
-    _progress.n = _current_scraped_word_number
-    _progress.refresh()
-    _progress.total = total_word_number
+    global _progress
+    _progress = tqdm(
+        desc='Scraping',
+        unit='word',
+        initial=_current_scraped_word_number,
+        total=total_word_number
+    )
 
 
 # if single word scraped, this function is called
