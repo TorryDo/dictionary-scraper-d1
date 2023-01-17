@@ -29,8 +29,6 @@ def scrape_wiktionary_word(
     # remove tag inside text
     json_data = BeautifulSoup(response.text, "html.parser").text
 
-    print(json_data)
-
     # start scrape content
     cock = JsonHelper.str2dict(json_data)
     if len(cock) == 0 or "en" not in cock:

@@ -3,18 +3,18 @@ import shutil
 
 from src.model.vocab.vocab import Vocab
 from src.scraper.move_files_from_queue_to_split import move_files_from_queue_to_split
-from src.scraper.properties import ScraperProps, ConfigKeys
+from src.scraper.properties import ScraperProps, ConfigKeys, ConfigData
 from src.scraper.setup_workspace import _setup_workspace
 from src.scraper.split_word_file import split_to_smaller_word_file
 from src.scraper.wiktionary.scrape_wiktionary import scrape_wiktionary_word
 from src.utils.FileHelper import FileHelper
-from src.utils.JsonHelper import JsonHelper
 
 
 def manage_scraper(
         word_filepath: str,
         workspace_directory: str = FileHelper.current_dir('../workspace'),
         scraper_number: int = 5,
+        on_start=None,
         in_progress=None,
         on_finished=None,
 ):
@@ -24,6 +24,7 @@ def manage_scraper(
     if scraper_number == 0:
         raise Exception('required scraper number > 0')
 
+    ScraperProps.on_start = on_start
     ScraperProps.in_progress = in_progress
     ScraperProps.on_finished = on_finished
 
@@ -43,18 +44,16 @@ def manage_scraper(
 
 # lifecycles #################################################################
 
-def _on_first_run(config_data: dict):
-    print('on first run')
+def _on_first_run():
+    print('_on first run')
     cock = split_to_smaller_word_file(
         word_filepath=ScraperProps.word_filepath,
         dst_dir=ScraperProps.split_words_dir,
-        rmdir_if_exists=True
     )
-    config_data[ConfigKeys.word_number] = cock[ConfigKeys.word_number]
-    FileHelper.write_text_file(
-        path=ScraperProps.word_filepath,
-        data=JsonHelper.dict2json(config_data)
-    )
+    ConfigData.get()[ConfigKeys.word_number] = cock[ConfigKeys.word_number]
+    ConfigData.save()
+
+    _on_resume()
 
 
 def _on_conflict_word_file() -> bool:
@@ -62,8 +61,9 @@ def _on_conflict_word_file() -> bool:
     return True
 
 
-def _on_resume(config_data: dict):
+def _on_resume():
     print('on resume')
+    ScraperProps.on_start()
     remained_word_files: list[str] = list(filter(
         lambda f: f.startswith(ScraperProps.split_filename_prefix),
         FileHelper.children(from_root=ScraperProps.split_words_dir)
@@ -81,7 +81,7 @@ def _finalize():
     print('finalize....')
 
 
-def _on_finished(config_data: dict):
+def _on_finished():
     print('on finished')
     ScraperProps.on_finished()
 
@@ -133,6 +133,8 @@ async def _scrape_words_then_move_file(
             vocab = scrape_wiktionary_word(word)
             if vocab is not None:
                 vocabs.append(vocab)
+                if ScraperProps.in_progress is not None:
+                    ScraperProps.in_progress()
             else:
                 error_words.append(word)
 
@@ -151,6 +153,9 @@ async def _scrape_words_then_move_file(
 
         FileHelper.delete_file(path=dst)
 
+        if ScraperProps.in_progress is not None:
+            ScraperProps.in_progress(scraped_word_number=len(vocabs))
+
 
 def navigate_routes_from_config_data(
         on_first_run,
@@ -158,26 +163,22 @@ def navigate_routes_from_config_data(
         on_finished,
         on_conflict_word_file,
 ):
-    datastr = FileHelper.read_file(ScraperProps.config_filepath)
+    ConfigData.update_from_file()
+
     # on_first_run
-    if datastr is None or len(datastr) == 0:
-        config_data = dict()
-        config_data['word_file_path'] = ScraperProps.word_filepath
-
-        on_first_run(config_data)
-
-        FileHelper.write_text_file(
-            path=ScraperProps.config_filepath,
-            data=JsonHelper.dict2json(config_data)
-        )
+    if not ConfigData.is_initialized():
+        print('on is_initialized')
+        ConfigData.get()[ConfigKeys.word_file_path] = ScraperProps.word_filepath
+        ConfigData.get()[ConfigKeys.scrape_word_number] = 0
+        ConfigData.save()
+        on_first_run()
         return
 
-    config_data = JsonHelper.str2dict(datastr)
-    if config_data.get(ConfigKeys.word_file_path) != ScraperProps.word_filepath:
+    if ConfigData.get().get(ConfigKeys.word_file_path) != ScraperProps.word_filepath:
         if on_conflict_word_file():
             return
         # on_resume / on_finished
-    if config_data.get(ConfigKeys.result) is None:
-        on_resume(config_data)
+    if ConfigData.get().get(ConfigKeys.result) is None:
+        on_resume()
     else:
-        on_finished(config_data)
+        on_finished()
