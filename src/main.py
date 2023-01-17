@@ -46,5 +46,5 @@ if __name__ == '__main__':
         workspace_directory=FileHelper.current_dir('../workspace'),
         on_start=on_start,
         in_progress=in_progress,
-        on_finished=on_finished
+        on_finished=on_finished,
     )

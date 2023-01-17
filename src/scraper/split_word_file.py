@@ -34,12 +34,13 @@ def split_to_smaller_word_file(
         if len(temp_list) == 0:
             break
 
-        data = ''
-        for word in temp_list:
-            data += f'{word}\n'
+        data = '\n'.join(temp_list)
 
         split_filepath = dst_dir + f'/{prefix_each_file}{count}.txt'
-        FileHelper.write_text_file(path=split_filepath, data=data)
+        FileHelper.write_text_file(
+            path=split_filepath,
+            data=data
+        )
 
     cock[ConfigKeys.word_number] = len(word_list)
     return cock
