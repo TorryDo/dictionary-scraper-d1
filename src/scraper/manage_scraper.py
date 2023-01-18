@@ -99,7 +99,7 @@ def _finalize():
     ) -> list[str]:
         names = [name for name in FileHelper.children(from_root=src_dir)]
         names.sort(key=lambda f: int(re.sub('\D', '', f)))
-        return [src_dir + name for name in names]
+        return [src_dir + '/' + name for name in names]
 
     # save success words txt
     success_word_paths = sort_filename_by_number_from_dir(ScraperProps.success_words_dir)
@@ -118,7 +118,7 @@ def _finalize():
     )
 
     # save state and call on_finished
-    ConfigData.get()[ConfigKeys.state] = ScrapingState.Finalized
+    ConfigData.get()[ConfigKeys.state] = ScrapingState.Finalized.value
     ConfigData.save()
 
     _on_finished()
