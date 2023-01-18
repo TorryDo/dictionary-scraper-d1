@@ -7,10 +7,6 @@ from src.utils.JsonHelper import JsonHelper
 
 
 class ConfigKeys:
-    """
-    I know that "scrape_word_number" and "result_success_word_number" are pretty the same.
-    but who cares? :)
-    """
     state = 'state'
     word_file_path = 'word_file_path'
     word_number = 'word_number'
