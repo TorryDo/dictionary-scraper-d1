@@ -3,9 +3,10 @@ import re
 import shutil
 
 from src.model.vocab.vocab import Vocab
+from src.scraper.ConfigData import ConfigData, ConfigKeys
 from src.scraper.ScrapingState import ScrapingState
 from src.scraper.move_files_from_queue_to_split import move_files_from_queue_to_split
-from src.scraper.properties import ScraperProps, ConfigKeys, ConfigData
+from src.scraper.scraper_props import ScraperProps
 from src.scraper.setup_workspace import _setup_workspace
 from src.scraper.split_word_file import split_to_smaller_word_file
 from src.scraper.wiktionary.scrape_wiktionary import scrape_wiktionary_word

@@ -1,10 +1,11 @@
 import warnings
+from enum import Enum
 
 from bs4 import MarkupResemblesLocatorWarning
 from tqdm import tqdm
 
+from src.scraper.ConfigData import ConfigData, ConfigKeys
 from src.scraper.manage_scraper import manage_scraper
-from src.scraper.properties import ConfigData, ConfigKeys
 from src.utils.FileHelper import FileHelper
 
 _progress: tqdm
@@ -47,7 +48,43 @@ def on_finished():
     pass
 
 
+class ScrapeSource(Enum):
+    WiktionaryApi = 'wiktionary api'
+    Others = 'others'
+
+
+def choose_scrape_source() -> ScrapeSource:
+    print('Choose one source to start scraping:')
+    options = [
+        ScrapeSource.WiktionaryApi,
+        ScrapeSource.Others
+    ]
+
+    for i in range(len(options)):
+        print(f'{i + 1}, {options[i].value}')
+
+    print('Your choice is: ', end='')
+    position = int(input())
+
+    return options[position - 1]
+
+
+def display_previous_data():
+    print('Previous data:')
+    scraping_source = ScrapeSource.WiktionaryApi
+    print(f'1, Scraping source: {scraping_source.value}')
+    total_word = 370_000
+    print(f'- Total words: {total_word}')
+    scraped_word = 10_000
+    print(f'- Scraped words: {scraped_word}')
+
+
+def on_init():
+    pass
+
+
 if __name__ == '__main__':
+    display_previous_data()
     warnings.filterwarnings("ignore", category=MarkupResemblesLocatorWarning, module='bs4')
     manage_scraper(
         word_filepath=FileHelper.current_dir('../raw/words_alpha.txt'),

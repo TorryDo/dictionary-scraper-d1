@@ -1,4 +1,4 @@
-from src.scraper.properties import ConfigKeys
+from src.scraper.ConfigData import ConfigKeys
 from src.utils.FileHelper import FileHelper
 
 

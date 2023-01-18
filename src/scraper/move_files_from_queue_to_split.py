@@ -1,6 +1,6 @@
 import shutil
 
-from src.scraper.properties import ScraperProps
+from src.scraper.scraper_props import ScraperProps
 from src.utils.FileHelper import FileHelper
 
 
