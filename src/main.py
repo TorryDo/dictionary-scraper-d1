@@ -1,10 +1,13 @@
+import warnings
+
+from bs4 import MarkupResemblesLocatorWarning
 from tqdm import tqdm
 
 from src.scraper.manage_scraper import manage_scraper
 from src.scraper.properties import ConfigData, ConfigKeys
 from src.utils.FileHelper import FileHelper
 
-_progress = None
+_progress: tqdm
 _current_scraped_word_number: int
 
 
@@ -45,10 +48,12 @@ def on_finished():
 
 
 if __name__ == '__main__':
+    warnings.filterwarnings("ignore", category=MarkupResemblesLocatorWarning, module='bs4')
     manage_scraper(
         word_filepath=FileHelper.current_dir('../raw/words_alpha.txt'),
         workspace_directory=FileHelper.current_dir('../workspace'),
         on_start=on_start,
         in_progress=in_progress,
         on_finished=on_finished,
+        scraper_number=15
     )

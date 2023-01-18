@@ -37,8 +37,12 @@ async def scrape_wiktionary_word(
             response = await res.text()
 
     # remove tag inside text
-    json_data = BeautifulSoup(response, "html.parser").text
-
+    json_data = None
+    try:
+        json_data = BeautifulSoup(response, "lxml").text
+    except NameError as e:
+        print(e)
+        print(f'error word = {word}')
     # start scrape content
     cock = JsonHelper.str2dict(json_data)
     if len(cock) == 0 or "en" not in cock:

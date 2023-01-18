@@ -76,9 +76,13 @@ def _on_resume():
     move_files_from_queue_to_split()
     asyncio.run(run_scrapers(number=ScraperProps.scraper_number))
 
+    _finalize()
 
+
+# wip
 def _finalize():
-    print('finalize....')
+    print('finalize working in progress')
+    pass
 
 
 def _on_finished():
