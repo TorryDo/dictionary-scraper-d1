@@ -1,7 +1,9 @@
 import asyncio
+import re
 import shutil
 
 from src.model.vocab.vocab import Vocab
+from src.scraper.ScrapingState import ScrapingState
 from src.scraper.move_files_from_queue_to_split import move_files_from_queue_to_split
 from src.scraper.properties import ScraperProps, ConfigKeys, ConfigData
 from src.scraper.setup_workspace import _setup_workspace
@@ -46,6 +48,11 @@ def manage_scraper(
 
 def _on_first_run():
     print('_on first run')
+
+    ConfigData.get()[ConfigKeys.word_file_path] = ScraperProps.word_filepath
+    ConfigData.get()[ConfigKeys.scrape_word_number] = 0
+    ConfigData.save()
+
     cock = split_to_smaller_word_file(
         word_filepath=ScraperProps.word_filepath,
         dst_dir=ScraperProps.split_words_dir,
@@ -53,6 +60,8 @@ def _on_first_run():
     ConfigData.get()[ConfigKeys.word_number] = cock[ConfigKeys.word_number]
     ConfigData.save()
 
+    ConfigData.get()[ConfigKeys.state] = ScrapingState.Initialized.value
+    ConfigData.save()
     _on_resume()
 
 
@@ -76,14 +85,43 @@ def _on_resume():
     move_files_from_queue_to_split()
     asyncio.run(run_scrapers(number=ScraperProps.scraper_number))
 
+    ConfigData.get()[ConfigKeys.state] = ScrapingState.Scraped
+    ConfigData.save()
     _finalize()
 
 
 # wip
 def _finalize():
     print('finalizing...')
-    # ConfigData.get()[ConfigKeys.result][ConfigKeys.]
 
+    def sort_filename_by_number_from_dir(
+            src_dir
+    ) -> list[str]:
+        names = [name for name in FileHelper.children(from_root=src_dir)]
+        names.sort(key=lambda f: int(re.sub('\D', '', f)))
+        return [src_dir + name for name in names]
+
+    # save success words txt
+    success_word_paths = sort_filename_by_number_from_dir(ScraperProps.success_words_dir)
+    success_word_datatxt = ',\n'.join([FileHelper.read_file(path) for path in success_word_paths])
+    FileHelper.write_text_file(
+        path=ScraperProps.result_success_jsontxt_filepath,
+        data=success_word_datatxt
+    )
+
+    # save error words txt
+    error_word_paths = sort_filename_by_number_from_dir(ScraperProps.error_words_dir)
+    error_words_datatxt = '\n'.join([FileHelper.read_file(path) for path in error_word_paths])
+    FileHelper.write_text_file(
+        path=ScraperProps.result_error_txt_filepath,
+        data=error_words_datatxt
+    )
+
+    # save state and call on_finished
+    ConfigData.get()[ConfigKeys.state] = ScrapingState.Finalized
+    ConfigData.save()
+
+    _on_finished()
 
 
 def _on_finished():
@@ -173,17 +211,15 @@ def navigate_routes_from_config_data(
     # on_first_run
     if not ConfigData.is_initialized():
         print('on is_initialized')
-        ConfigData.get()[ConfigKeys.word_file_path] = ScraperProps.word_filepath
-        ConfigData.get()[ConfigKeys.scrape_word_number] = 0
-        ConfigData.save()
         on_first_run()
         return
 
     if ConfigData.get().get(ConfigKeys.word_file_path) != ScraperProps.word_filepath:
         if on_conflict_word_file():
+            print('do on conflict word file?')
             return
         # on_resume / on_finished
-    if ConfigData.get().get(ConfigKeys.result) is None:
-        on_resume()
-    else:
+    if ConfigData.is_finalized():
         on_finished()
+    else:
+        on_resume()

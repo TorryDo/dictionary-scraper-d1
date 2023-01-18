@@ -1,5 +1,6 @@
 from typing import Optional
 
+from src.scraper.ScrapingState import ScrapingState
 from src.utils.FileHelper import FileHelper
 from src.utils.JsonHelper import JsonHelper
 
@@ -9,9 +10,12 @@ class ScraperProps:
     word_filepath: str
     workspace_dir: str
     config_filepath: str
+
     result_dir: str
     error_words_dir: str
     success_words_dir: str
+    result_error_txt_filepath: str
+    result_success_jsontxt_filepath: str
 
     wip_dir: str
     split_words_dir: str
@@ -25,14 +29,15 @@ class ScraperProps:
 
 
 class ConfigKeys:
+    """
+    I know that "scrape_word_number" and "result_success_word_number" are pretty the same.
+    but who cares? :)
+    """
+    state = 'state'
     word_file_path = 'word_file_path'
     word_number = 'word_number'
-    in_progress = 'in_progress'
     total_split_file_number = 'total_split_file_number'
     scrape_word_number = 'scrape_word_number'
-    result = 'result'
-    success_word_number = 'success_word_number'
-    error_word_number = 'error_word_number'
 
 
 class ConfigData:
@@ -81,20 +86,25 @@ class ConfigData:
             return False
         return True
 
+    @staticmethod
+    def is_finalized() -> bool:
+        conf_state = ConfigData.get().get(ConfigKeys.state)
+        if conf_state == ScrapingState.Finalized.value:
+            return True
+
+        return False
+
 
 """
 config.txt structure:
 {
     word_file_path: string,
     word_number: int,
-    in_progress: {
-        // current_split_file_number: int,
-        scrape_word_number: int
-        total_split_file_number: int
-    },
-    result: {
-        success_word_number: int,
-        error_word_number: int
-    }   
+    // current_split_file_number: int,
+    scrape_word_number: int,
+    total_split_file_number: int,
+    
+    success_word_number: int,
+    error_word_number: int,
 }
 """

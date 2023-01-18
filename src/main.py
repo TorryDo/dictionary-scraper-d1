@@ -55,5 +55,5 @@ if __name__ == '__main__':
         on_start=on_start,
         in_progress=in_progress,
         on_finished=on_finished,
-        scraper_number=15
+        scraper_number=60
     )

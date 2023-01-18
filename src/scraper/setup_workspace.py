@@ -15,6 +15,8 @@ def _setup_workspace(workspace_dir: str):
     ScraperProps.result_dir = workspace_dir + '/result'
     ScraperProps.error_words_dir = ScraperProps.result_dir + '/error_words'
     ScraperProps.success_words_dir = ScraperProps.result_dir + '/success_words'
+    ScraperProps.result_error_txt_filepath = ScraperProps.result_dir + '/error_words.txt'
+    ScraperProps.result_success_jsontxt_filepath = ScraperProps.result_dir + '/success_word_json.txt'
 
     ScraperProps.wip_dir = workspace_dir + '/wip'
     ScraperProps.split_words_dir = ScraperProps.wip_dir + '/split_words'
