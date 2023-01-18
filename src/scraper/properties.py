@@ -14,7 +14,6 @@ class ScraperProps:
     success_words_dir: str
 
     wip_dir: str
-    extract_words_dir: str
     split_words_dir: str
     scrape_queue_dir: str
 

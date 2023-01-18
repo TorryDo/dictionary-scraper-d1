@@ -81,8 +81,9 @@ def _on_resume():
 
 # wip
 def _finalize():
-    print('finalize working in progress')
-    pass
+    print('finalizing...')
+    # ConfigData.get()[ConfigKeys.result][ConfigKeys.]
+
 
 
 def _on_finished():
@@ -108,7 +109,7 @@ async def run_scrapers(
             _scrape_words_then_move_file(
                 src_dir=ScraperProps.split_words_dir,
                 queue_dir=ScraperProps.scrape_queue_dir,
-                dst_dir=ScraperProps.extract_words_dir,
+                dst_dir=ScraperProps.success_words_dir,
                 error_dir=ScraperProps.error_words_dir,
             )
         ))
