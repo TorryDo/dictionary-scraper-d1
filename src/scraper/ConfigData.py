@@ -1,6 +1,6 @@
 from typing import Optional
 
-from src.scraper.ScrapingState import ScrapingState
+from src.scraper.ScrapeState import ScrapeState
 from src.scraper.scraper_props import ScraperProps
 from src.utils.FileHelper import FileHelper
 from src.utils.JsonHelper import JsonHelper
@@ -9,6 +9,9 @@ from src.utils.JsonHelper import JsonHelper
 class ConfigKeys:
     state = 'state'
     word_file_path = 'word_file_path'
+    scrape_source_id = 'scrape_source_id'
+    scraper_number = 'scraper_number'
+    workspace_dir = 'workspace_dir'
     word_number = 'word_number'
     total_split_file_number = 'total_split_file_number'
     scrape_word_number = 'scrape_word_number'
@@ -56,6 +59,11 @@ class ConfigData:
 
     @staticmethod
     def is_initialized() -> bool:
+        try:
+            ConfigData.update_from_file()
+        except:
+            return False
+
         if len(ConfigData._data) == 0:
             return False
         return True
@@ -63,7 +71,9 @@ class ConfigData:
     @staticmethod
     def is_finalized() -> bool:
         conf_state = ConfigData.get().get(ConfigKeys.state)
-        if conf_state == ScrapingState.Finalized.value:
+        if conf_state is None:
+            return False
+        if conf_state == ScrapeState.Finalized.value:
             return True
 
         return False

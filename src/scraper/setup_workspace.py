@@ -2,7 +2,7 @@ from src.scraper.scraper_props import ScraperProps
 from src.utils.FileHelper import FileHelper
 
 
-def _setup_workspace(workspace_dir: str):
+def _setup_props_and_create_workspace(workspace_dir: str):
     ScraperProps.workspace_dir = workspace_dir
     ScraperProps.config_filepath = ScraperProps.workspace_dir + '/config.txt'
 

@@ -1,47 +1,52 @@
 import asyncio
 import re
 import shutil
+from typing import Callable, Optional
 
 from src.model.vocab.vocab import Vocab
 from src.scraper.ConfigData import ConfigData, ConfigKeys
-from src.scraper.ScrapingState import ScrapingState
+from src.scraper.ScrapeSource import ScrapeSources
+from src.scraper.ScrapeState import ScrapeState
 from src.scraper.move_files_from_queue_to_split import move_files_from_queue_to_split
 from src.scraper.scraper_props import ScraperProps
-from src.scraper.setup_workspace import _setup_workspace
+from src.scraper.setup_workspace import _setup_props_and_create_workspace
 from src.scraper.split_word_file import split_to_smaller_word_file
 from src.scraper.wiktionary.scrape_wiktionary import scrape_wiktionary_word
 from src.utils.FileHelper import FileHelper
 
 
+def _default_confirm_information() -> dict:
+    return {
+        ConfigKeys.scrape_source_id: ScrapeSources.wiktionary_api,
+        ConfigKeys.scraper_number: 20,
+    }
+
+
+_on_confirm_information: Optional[Callable] = None
+_on_init_choose_config_properties: Optional[Callable] = None
+
+
 def manage_scraper(
-        word_filepath: str,
-        workspace_directory: str = FileHelper.current_dir('../workspace'),
-        scraper_number: int = 5,
-        on_start=None,
+        on_init_choose_config_properties: Callable[[], dict],
+        on_confirm_information: Callable[[], dict] = _default_confirm_information,
+        on_start_scraping=None,
         in_progress=None,
         on_finished=None,
 ):
-    if not FileHelper.is_existed(word_filepath):
-        raise Exception(f'file: {word_filepath} not existed')
+    global _on_confirm_information
+    global _on_init_choose_config_properties
+    _on_confirm_information = on_confirm_information
+    _on_init_choose_config_properties = on_init_choose_config_properties
 
-    if scraper_number == 0:
-        raise Exception('required scraper number > 0')
-
-    ScraperProps.on_start = on_start
+    ScraperProps.on_start_scraping = on_start_scraping
     ScraperProps.in_progress = in_progress
     ScraperProps.on_finished = on_finished
-
-    ScraperProps.scraper_number = scraper_number
-    ScraperProps.word_filepath = word_filepath
-
-    _setup_workspace(workspace_dir=workspace_directory)
 
     # all properties have been set
     navigate_routes_from_config_data(
         on_first_run=_on_first_run,
         on_resume=_on_resume,
         on_finished=_on_finished,
-        on_conflict_word_file=_on_conflict_word_file,
     )
 
 
@@ -50,19 +55,39 @@ def manage_scraper(
 def _on_first_run():
     print('_on first run')
 
-    ConfigData.get()[ConfigKeys.word_file_path] = ScraperProps.word_filepath
+    cock = _on_init_choose_config_properties()
+    temp_word_filepath = cock[ConfigKeys.word_file_path].replace('\\', '/')
+    temp_workspace_dir = cock[ConfigKeys.workspace_dir].replace('\\', '/')
+    temp_scrape_src_id = cock[ConfigKeys.scrape_source_id]
+    if not FileHelper.is_existed(temp_word_filepath):
+        raise Exception(f'file: {temp_word_filepath} not existed')
+
+    ScraperProps.word_filepath = temp_word_filepath
+    ScraperProps.scrape_source = ScrapeSources.from_id(temp_scrape_src_id)
+    _setup_props_and_create_workspace(temp_workspace_dir)
+
+    ConfigData.set({})
+
+    ConfigData.get()[ConfigKeys.word_file_path] = temp_word_filepath
+    ConfigData.get()[ConfigKeys.workspace_dir] = temp_workspace_dir
+    ConfigData.get()[ConfigKeys.scrape_source_id] = temp_scrape_src_id
     ConfigData.get()[ConfigKeys.scrape_word_number] = 0
-    ConfigData.save()
 
     cock = split_to_smaller_word_file(
         word_filepath=ScraperProps.word_filepath,
         dst_dir=ScraperProps.split_words_dir,
     )
+
     ConfigData.get()[ConfigKeys.word_number] = cock[ConfigKeys.word_number]
     ConfigData.save()
 
-    ConfigData.get()[ConfigKeys.state] = ScrapingState.Initialized.value
-    ConfigData.save()
+    ScraperProps.workspace_filepath = FileHelper.current_dir('../workspace.txt')
+    data = temp_workspace_dir
+    FileHelper.write_text_file(
+        path=ScraperProps.workspace_filepath,
+        data=data
+    )
+
     _on_resume()
 
 
@@ -73,7 +98,15 @@ def _on_conflict_word_file() -> bool:
 
 def _on_resume():
     print('on resume')
-    ScraperProps.on_start()
+    cock_confirm = _on_confirm_information()
+    scraper_number = cock_confirm[ConfigKeys.scraper_number]
+    if scraper_number <= 0:
+        raise Exception('required scraper number > 0')
+    print(f'scraper number on resume = {scraper_number}')
+    ScraperProps.scraper_number = scraper_number
+
+    move_files_from_queue_to_split()
+
     remained_word_files: list[str] = list(filter(
         lambda f: f.startswith(ScraperProps.split_filename_prefix),
         FileHelper.children(from_root=ScraperProps.split_words_dir)
@@ -83,10 +116,11 @@ def _on_resume():
         return
     #     scraping...
 
-    move_files_from_queue_to_split()
+    ScraperProps.on_start_scraping()
+
     asyncio.run(run_scrapers(number=ScraperProps.scraper_number))
 
-    ConfigData.get()[ConfigKeys.state] = ScrapingState.Scraped
+    ConfigData.get()[ConfigKeys.state] = ScrapeState.Scraped.value
     ConfigData.save()
     _finalize()
 
@@ -119,7 +153,7 @@ def _finalize():
     )
 
     # save state and call on_finished
-    ConfigData.get()[ConfigKeys.state] = ScrapingState.Finalized.value
+    ConfigData.get()[ConfigKeys.state] = ScrapeState.Finalized.value
     ConfigData.save()
 
     _on_finished()
@@ -205,22 +239,20 @@ def navigate_routes_from_config_data(
         on_first_run,
         on_resume,
         on_finished,
-        on_conflict_word_file,
 ):
-    ConfigData.update_from_file()
-
-    # on_first_run
-    if not ConfigData.is_initialized():
-        print('on is_initialized')
+    ScraperProps.workspace_filepath = FileHelper.current_dir('../workspace.txt')
+    if not FileHelper.is_existed(ScraperProps.workspace_filepath):
         on_first_run()
         return
 
-    if ConfigData.get().get(ConfigKeys.word_file_path) != ScraperProps.word_filepath:
-        if on_conflict_word_file():
-            print('do on conflict word file?')
-            return
-        # on_resume / on_finished
+    # initialized
+    ScraperProps.workspace_dir = FileHelper.read_file(ScraperProps.workspace_filepath)
+    _setup_props_and_create_workspace(ScraperProps.workspace_dir)
+
     if ConfigData.is_finalized():
         on_finished()
-    else:
-        on_resume()
+        return
+
+    ScraperProps.word_filepath = ConfigData.get().get(ConfigKeys.word_file_path)
+    ScraperProps.scrape_source = ScrapeSources.from_id(ConfigData.get().get(ConfigKeys.scrape_source_id))
+    on_resume()

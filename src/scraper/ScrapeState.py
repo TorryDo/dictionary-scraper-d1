@@ -1,8 +1,7 @@
 from enum import Enum
 
 
-class ScrapingState(Enum):
-    Initialized = 'initialized'
+class ScrapeState(Enum):
     Scraped = 'scraped'
     Finalized = 'finalized'
     Finished = 'finished'

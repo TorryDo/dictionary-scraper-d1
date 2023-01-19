@@ -9,7 +9,7 @@ from src.model.vocab.word_type_definition import WordTypeDefinition
 from src.utils.JsonHelper import JsonHelper
 
 
-def _word_url(word: str) -> str:
+def get_wiktionary_word_url(word: str) -> str:
     base_url = "https://en.wiktionary.org/api/rest_v1/page/definition"
     return f'{base_url}/{word}'
 
@@ -18,7 +18,7 @@ async def scrape_wiktionary_word(
         word: str,
         on_status_code=None,
 ) -> Optional[Vocab]:
-    url = _word_url(word)
+    url = get_wiktionary_word_url(word)
     # response = requests.get(url)
 
     # if response.status_code >= 400:

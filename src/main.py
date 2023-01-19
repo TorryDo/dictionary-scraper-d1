@@ -1,11 +1,12 @@
 import warnings
-from enum import Enum
 
 from bs4 import MarkupResemblesLocatorWarning
 from tqdm import tqdm
 
 from src.scraper.ConfigData import ConfigData, ConfigKeys
+from src.scraper.ScrapeSource import ScrapeSource, ScrapeSources
 from src.scraper.manage_scraper import manage_scraper
+from src.scraper.scraper_props import ScraperProps
 from src.utils.FileHelper import FileHelper
 
 _progress: tqdm
@@ -48,49 +49,89 @@ def on_finished():
     pass
 
 
-class ScrapeSource(Enum):
-    WiktionaryApi = 'wiktionary api'
-    Others = 'others'
-
-
 def choose_scrape_source() -> ScrapeSource:
     print('Choose one source to start scraping:')
     options = [
-        ScrapeSource.WiktionaryApi,
-        ScrapeSource.Others
+        ScrapeSources.wiktionary_api,
+        ScrapeSources.other
     ]
 
     for i in range(len(options)):
-        print(f'{i + 1}, {options[i].value}')
+        print(f'{i + 1}, {options[i].name}')
 
     print('Your choice is: ', end='')
     position = int(input())
 
-    return options[position - 1]
+    return options[position - 1] if position in range(len(options)) else exit()
 
 
-def display_previous_data():
-    print('Previous data:')
-    scraping_source = ScrapeSource.WiktionaryApi
-    print(f'1, Scraping source: {scraping_source.value}')
-    total_word = 370_000
-    print(f'- Total words: {total_word}')
-    scraped_word = 10_000
-    print(f'- Scraped words: {scraped_word}')
+# call to user input config properties
+def on_init_user_choose_config_properties() -> dict:
+    cock = dict()
+
+    print('Hi, Before scraping please let me know some informations:')
+    print('- word file path (.txt): ', end='')
+    word_filepath = input()
+
+    print('- workspace directory (enter to choose current dir): ', end='')
+    workspace_dir = input()
+    if workspace_dir is None or workspace_dir == '':
+        workspace_dir = FileHelper.current_dir('../workspace2')
+
+    print(f'workspace dir = {workspace_dir}')
+    scrape_source = choose_scrape_source()
+
+    cock[ConfigKeys.word_file_path] = word_filepath
+    cock[ConfigKeys.workspace_dir] = workspace_dir
+    cock[ConfigKeys.scrape_source_id] = scrape_source.id
+    return cock
 
 
-def on_init():
+def delete_workspace():
+    print('delete workspace not finished')
     pass
 
 
+def on_confirm_information() -> dict:
+    cock = dict()
+    scraper_number = 30
+    if ScraperProps.scraper_number is not None:
+        scraper_number = ScraperProps.scraper_number
+
+    scrape_source = ScraperProps.scrape_source
+
+    print("ok, I collected some information from you, these shouldn't be changed from now (unless cancel task)")
+    print(f"- word file path: {ScraperProps.word_filepath}")
+    print(f"- workspace dir: {ScraperProps.workspace_dir}")
+    print(f"- scrape source: {scrape_source.name}")
+    print('please confirm these information:')
+    print(f'1, scraper number = {scraper_number}')
+    print(f'2, cancel current task')
+    print('Type number to choose/change (enter to skip): ', end='')
+    choice = input()
+    if choice == 1 or choice == '1':
+        print('please select scraper number (require > 0): ', end='')
+        scraper_number = int(input())
+    elif choice == 2 or choice == '2':
+        print('Do you want to abort this mission? (Y/n): ')
+        abort_char = input()
+        if abort_char == 'Y':
+            delete_workspace()
+            print('data deleted, thank you for using me')
+            exit()
+
+    cock[ConfigKeys.scraper_number] = scraper_number
+    return cock
+
+
 if __name__ == '__main__':
-    display_previous_data()
     warnings.filterwarnings("ignore", category=MarkupResemblesLocatorWarning, module='bs4')
     manage_scraper(
-        word_filepath=FileHelper.current_dir('../raw/words_alpha.txt'),
-        workspace_directory=FileHelper.current_dir('../workspace'),
-        on_start=on_start,
+        on_init_choose_config_properties=on_init_user_choose_config_properties,
+        on_confirm_information=on_confirm_information,
+        on_start_scraping=on_start,
         in_progress=in_progress,
         on_finished=on_finished,
-        scraper_number=60
     )
+#     word_filepath=FileHelper.current_dir('../raw/words_alpha.txt'),
+#         workspace_directory=FileHelper.current_dir('../workspace'),
