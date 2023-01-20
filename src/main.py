@@ -20,9 +20,6 @@ def on_start():
     global _current_scraped_word_number
     _current_scraped_word_number = ConfigData.get().get(ConfigKeys.scrape_word_number)
 
-    print(f'total_word_number = {total_word_number}')
-    print(f'current_word_number = {_current_scraped_word_number}')
-
     global _progress
     _progress = tqdm(
         desc='Scraping',
@@ -45,8 +42,53 @@ def in_progress(**kwargs):
     _progress.refresh()
 
 
+def show_statistics():
+    print('Statistics -------------------------')
+    _total_words = ConfigData.get().get(ConfigKeys.word_number)
+    _scraped_words = ConfigData.get().get(ConfigKeys.scrape_word_number)
+    _scrape_source = ScrapeSources.from_id(ConfigData.get().get(ConfigKeys.scrape_source_id))
+    _workspace_dir = ScraperProps.workspace_dir
+
+    print(f"- total words: {_total_words}")
+    print(f"- scraped words: {_scraped_words}")
+    print(f"- error words: {_total_words - _scraped_words}")
+    print(f"- scrape source: {_scrape_source.name}")
+    print(f"- workspace dir: {_workspace_dir}")
+
+
 def on_finished():
-    pass
+    def create_sql_file():
+        print('working on crating sql file')
+
+    def create_excel_file():
+        print('working on creating excel file')
+
+    print('mission success, the data have been collected in workspace dir.')
+    while True:
+        print('-------------------------')
+        print('do you want to do any thing else?')
+
+        print('1, show statistics')
+        print('2, create sql file')
+        print('3, create excel file (not yet)')
+        print("99, delete workspace (can't undo)")
+
+        print('your choice (enter to exit): ', end='')
+
+        choice = input().replace(' ', '')
+        if not choice.isdigit():
+            break
+
+        choice = int(choice)
+        if choice == 1:
+            show_statistics()
+        if choice == 2:
+            create_sql_file()
+        if choice == 3:
+            create_excel_file()
+        if choice == 99:
+            if confirm_delete_workspace():
+                exit()
 
 
 def choose_scrape_source() -> ScrapeSource:
@@ -87,9 +129,19 @@ def on_init_user_choose_config_properties() -> dict:
     return cock
 
 
+def confirm_delete_workspace()->bool:
+    print('Do you want to abort this mission? (Y/n): ', end='')
+    abort_char = input()
+    if abort_char == 'Y':
+        delete_workspace()
+        print('workspace deleted, thank you for using me')
+        return True
+    return False
+
+
 def delete_workspace():
-    print('delete workspace not finished')
-    pass
+    FileHelper.remove_dirs(ScraperProps.workspace_dir)
+    FileHelper.delete_file(ScraperProps.workspace_filepath)
 
 
 def on_confirm_information() -> dict:

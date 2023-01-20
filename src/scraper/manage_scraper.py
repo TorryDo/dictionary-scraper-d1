@@ -97,8 +97,8 @@ def _on_first_run():
 
 
 def _on_resume():
-    print('on resume')
-    cock_confirm = _on_confirm_information()
+    print('_on_resume')
+    cock_confirm = _on_confirm_information() # includes: scraper_number
     scraper_number = cock_confirm[ConfigKeys.scraper_number]
     if scraper_number <= 0:
         raise Exception('required scraper number > 0')
@@ -126,7 +126,7 @@ def _on_resume():
 
 
 def _finalize():
-    print('finalizing...')
+    print('_finalizing...')
 
     def sort_filename_by_number_from_dir(
             src_dir
@@ -159,7 +159,7 @@ def _finalize():
 
 
 def _on_finished():
-    print('on finished')
+    print('_on_finished')
     ScraperProps.on_finished()
 
 
