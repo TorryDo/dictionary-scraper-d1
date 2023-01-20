@@ -5,6 +5,7 @@ from tqdm import tqdm
 
 from src.scraper.ConfigData import ConfigData, ConfigKeys
 from src.scraper.ScrapeSource import ScrapeSource, ScrapeSources
+from src.scraper._json2db import _json2db
 from src.scraper.manage_scraper import manage_scraper
 from src.scraper.scraper_props import ScraperProps
 from src.utils.FileHelper import FileHelper
@@ -56,20 +57,31 @@ def show_statistics():
     print(f"- workspace dir: {_workspace_dir}")
 
 
+def create_db_file():
+    print('Creating .db file ...')
+
+    _result_words_filepath = ScraperProps.result_success_jsontxt_filepath
+
+    _json2db(
+        table_name='EnglishVocabs',
+        vocab_jsons=[js.removesuffix(',') for js in FileHelper.lines(_result_words_filepath)],
+        dst=ScraperProps.result_dir + '/EnglishVocabs.db'
+    )
+
+    print('Success')
+
+def create_excel_file():
+    print('working on creating excel file')
+
+
 def on_finished():
-    def create_sql_file():
-        print('working on crating sql file')
-
-    def create_excel_file():
-        print('working on creating excel file')
-
     print('mission success, the data have been collected in workspace dir.')
     while True:
         print('-------------------------')
         print('do you want to do any thing else?')
 
         print('1, show statistics')
-        print('2, create sql file')
+        print('2, create .db file')
         print('3, create excel file (not yet)')
         print("99, delete workspace (can't undo)")
 
@@ -83,7 +95,7 @@ def on_finished():
         if choice == 1:
             show_statistics()
         if choice == 2:
-            create_sql_file()
+            create_db_file()
         if choice == 3:
             create_excel_file()
         if choice == 99:
@@ -129,7 +141,7 @@ def on_init_user_choose_config_properties() -> dict:
     return cock
 
 
-def confirm_delete_workspace()->bool:
+def confirm_delete_workspace() -> bool:
     print('Do you want to abort this mission? (Y/n): ', end='')
     abort_char = input()
     if abort_char == 'Y':
