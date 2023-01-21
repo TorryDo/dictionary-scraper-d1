@@ -1,6 +1,5 @@
 import sqlite3
 
-from src.model.vocab.vocab import Vocab
 from src.utils.FileHelper import FileHelper
 from src.utils.JsonHelper import JsonHelper
 
@@ -11,16 +10,48 @@ def _json2db(table_name: str, vocab_jsons: list[str], dst: str):
     connection = sqlite3.connect(dst)
     cursor = connection.cursor()
     cursor.execute(
-        f'Create Table if not exists {table_name} (id Integer Not Null PRIMARY KEY, word Text Not Null, types Text Not Null)'
+        f'CREATE TABLE IF NOT EXISTS {table_name} (id INTEGER NOT NULL PRIMARY KEY, word TEXT NOT NULL, types TEXT NOT NULL)'
     )
 
     for vocab_json in vocab_jsons:
         vocab_dict = JsonHelper.str2dict(vocab_json)
         word = vocab_dict['word']
-        types = JsonHelper.dict2json(vocab_dict['types'])
+        types = vocab_dict['types']
 
-        params = (word, str(types))
+        # remove empty examples in types
+        for type in types:
+            definitions = type['definitions']
+            for definition in definitions:
+                examples = definition['examples']
+                if len(examples) == 0:
+                    definition.pop('examples')
+
+        # shorten keys
+        # short_key_types: list = []
+        # for _type in types:
+        #     short_type = {
+        #         'type': _type['type'],
+        #         'defs': []
+        #     }
+        #     for _def in _type['definitions']:
+        #         short_definition = _def['definition']
+        #         short_examples = _def.get('examples')
+        #         short_def = {
+        #             'def': short_definition
+        #         }
+        #         if short_examples is not None and len(short_examples) >= 0:
+        #             short_def['egs'] = short_examples
+        #         short_type['defs'].append(short_def)
+        #     short_key_types.append(JsonHelper.dict2json(short_type))
+        # _dkm = '[' + ','.join(short_key_types) + ']'
+
+        new_types = JsonHelper.dict2json(types)
+
+        params = (word, str(new_types))
         cursor.execute(f"INSERT INTO {table_name}(word, types) values(?, ?)", params)
+
+
+
 
     connection.commit()
     connection.close()
