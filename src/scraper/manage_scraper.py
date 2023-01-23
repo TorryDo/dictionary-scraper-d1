@@ -14,6 +14,7 @@ from src.scraper.scraper_props import ScraperProps
 from src.scraper.split_word_file import split_to_smaller_word_file
 from src.scraper.wiktionary.scrape_wiktionary import scrape_wiktionary_word
 from src.utils.FileHelper import FileHelper
+from src.utils.JsonHelper import JsonHelper
 
 
 def _default_confirm_information() -> dict:
@@ -138,6 +139,19 @@ def _finalize():
     # save success words txt
     success_word_paths = sort_filename_by_number_from_dir(ScraperProps.success_words_dir)
     success_word_datatxt = ',\n'.join([FileHelper.read_file(path) for path in success_word_paths])
+
+    # vocab_json_list = []
+    # for vocab_json in success_word_datatxt.split(',\n'):
+    #     vocab_dick = JsonHelper.str2dict(vocab_json)
+    #     for type in vocab_dick['types']:
+    #         definitions = type['definitions']
+    #         for definition in definitions:
+    #             examples = definition['examples']
+    #             if examples is None or len(examples) == 0:
+    #                 definition.pop('examples')
+    #     vocab_json_list.append(JsonHelper.dict2json(vocab_dick))
+    # success_word_datatxt = ',\n'.join(vocab_json_list)
+
     FileHelper.write_text_file(
         path=ScraperProps.result_success_jsontxt_filepath,
         data=success_word_datatxt

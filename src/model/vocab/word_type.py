@@ -1,5 +1,3 @@
-import json
-
 from src.model.base.printable import Printable
 from src.model.vocab.word_type_definition import WordTypeDefinition
 
@@ -32,12 +30,7 @@ class WordType(Printable):
 
     def toJson(self) -> str:
 
-        definitions_in_json = '['
-
-        for definition in self.definitions:
-            definitions_in_json += f'{definition.toJson()},'
-
-        definitions_in_json = definitions_in_json.removesuffix(',')
-        definitions_in_json += ']'
+        temp = ','.join([definition.toJson() for definition in self.definitions])
+        definitions_in_json = f'[{temp}]'
 
         return f'{{"type": "{self.type}", "definitions": {definitions_in_json}}}'

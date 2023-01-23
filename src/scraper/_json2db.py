@@ -1,10 +1,12 @@
 import sqlite3
+import time
 
 from src.utils.FileHelper import FileHelper
 from src.utils.JsonHelper import JsonHelper
 
 
 def _json2db(table_name: str, vocab_jsons: list[str], dst: str):
+
     if not FileHelper.is_existed(dst):
         FileHelper.create_file(dst)
     connection = sqlite3.connect(dst)
@@ -22,8 +24,8 @@ def _json2db(table_name: str, vocab_jsons: list[str], dst: str):
         for type in types:
             definitions = type['definitions']
             for definition in definitions:
-                examples = definition['examples']
-                if len(examples) == 0:
+                examples = definition.get('examples')
+                if examples is not None and len(examples) == 0:
                     definition.pop('examples')
 
         # shorten keys
@@ -49,9 +51,6 @@ def _json2db(table_name: str, vocab_jsons: list[str], dst: str):
 
         params = (word, str(new_types))
         cursor.execute(f"INSERT INTO {table_name}(word, types) values(?, ?)", params)
-
-
-
 
     connection.commit()
     connection.close()

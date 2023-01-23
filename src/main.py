@@ -1,3 +1,4 @@
+import time
 import warnings
 
 from bs4 import MarkupResemblesLocatorWarning
@@ -59,7 +60,7 @@ def show_statistics():
 
 def create_db_file():
     print('Creating .db file ...')
-
+    start_time = time.time()
     _result_words_filepath = ScraperProps.result_success_jsontxt_filepath
 
     _json2db(
@@ -68,7 +69,10 @@ def create_db_file():
         dst=ScraperProps.result_dir + '/EnglishVocabs.db'
     )
 
-    print('Success')
+    end_time = time.time()
+    total_tile = end_time - start_time
+    print(f'this task takes: {total_tile} to finish')
+
 
 def create_excel_file():
     print('working on creating excel file')
@@ -130,7 +134,7 @@ def on_init_user_choose_config_properties() -> dict:
     print('- workspace directory (enter to choose current dir): ', end='')
     workspace_dir = input()
     if workspace_dir is None or workspace_dir == '':
-        workspace_dir = FileHelper.current_dir('../workspace2')
+        workspace_dir = FileHelper.current_dir('../workspace')
 
     print(f'workspace dir = {workspace_dir}')
     scrape_source = choose_scrape_source()
