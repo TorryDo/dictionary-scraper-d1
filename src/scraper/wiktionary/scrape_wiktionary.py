@@ -4,7 +4,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 from src.model.vocab.vocab import Vocab
-from src.model.vocab.word_type import WordType
+from src.model.vocab.word_type import WordPart
 from src.model.vocab.word_type_definition import WordTypeDefinition
 from src.utils.JsonHelper import JsonHelper
 
@@ -48,7 +48,7 @@ async def scrape_wiktionary_word(
     if len(cock) == 0 or "en" not in cock:
         return None
 
-    type_list: list[WordType] = []
+    type_list: list[WordPart] = []
 
     for word_type_cock in cock["en"]:
         typedef_list: list[WordTypeDefinition] = []
@@ -59,7 +59,7 @@ async def scrape_wiktionary_word(
                 examples=item['examples'] if ('examples' in item) else []
             ))
 
-        word_type = WordType(
+        word_type = WordPart(
             word_type=word_type_cock["partOfSpeech"],
             word_type_definitions=typedef_list
         )

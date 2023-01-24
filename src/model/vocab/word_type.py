@@ -2,7 +2,7 @@ from src.model.base.printable import Printable
 from src.model.vocab.word_type_definition import WordTypeDefinition
 
 
-class WordType(Printable):
+class WordPart(Printable):
     type: str = None
     definitions: list[WordTypeDefinition] = []
 
@@ -33,4 +33,4 @@ class WordType(Printable):
         temp = ','.join([definition.toJson() for definition in self.definitions])
         definitions_in_json = f'[{temp}]'
 
-        return f'{{"type": "{self.type}", "definitions": {definitions_in_json}}}'
+        return f'{{"name": "{self.type.lower()}", "defs": {definitions_in_json}}}'

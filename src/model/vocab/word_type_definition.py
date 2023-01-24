@@ -32,7 +32,7 @@ class WordTypeDefinition(Printable):
     def toJson(self) -> str:
         if len(self.examples) == 0:
             d = {
-                'definition': self.definition
+                'def': self.definition
             }
             return json.dumps(d)
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
