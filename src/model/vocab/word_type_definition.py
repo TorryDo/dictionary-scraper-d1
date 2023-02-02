@@ -30,6 +30,11 @@ class WordTypeDefinition(Printable):
             return ""
 
     def toJson(self) -> str:
+        if len(self.examples) == 0:
+            d = {
+                'def': self.definition
+            }
+            return json.dumps(d)
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
 
     # def toJson(self) -> str:

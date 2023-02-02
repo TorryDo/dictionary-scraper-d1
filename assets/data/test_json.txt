@@ -1,0 +1,271 @@
+// 20230114160923
+// https://en.wiktionary.org/api/rest_v1/page/definition/star
+
+{
+  "en": [
+    {
+      "partOfSpeech": "Noun",
+      "language": "English",
+      "definitions": [
+        {
+          "definition": "Any small <a rel=\"mw:WikiLink\" href=\"/wiki/luminous\" title=\"luminous\">luminous</a> dot appearing in the cloudless portion of the night sky, especially with a fixed location relative to other such dots."
+        },
+        {
+          "definition": ""
+        },
+        {
+          "definition": "A luminous <a rel=\"mw:WikiLink\" href=\"/wiki/celestial_body\" title=\"celestial body\">celestial body</a>, made up of <a rel=\"mw:WikiLink\" href=\"/wiki/plasma\" title=\"plasma\">plasma</a> (particularly <a rel=\"mw:WikiLink\" href=\"/wiki/hydrogen\" title=\"hydrogen\">hydrogen</a> and <a rel=\"mw:WikiLink\" href=\"/wiki/helium\" title=\"helium\">helium</a>) and having a spherical shape. Depending on context the <a rel=\"mw:WikiLink\" href=\"/wiki/sun\" title=\"sun\">sun</a> may or may not be included."
+        },
+        {
+          "definition": "A concave <a rel=\"mw:WikiLink\" href=\"/wiki/polygon\" title=\"polygon\">polygon</a> with regular, pointy protrusions and indentations, usually with four, five, or six points."
+        },
+        {
+          "definition": "An <a rel=\"mw:WikiLink\" href=\"/wiki/actor\" title=\"actor\">actor</a> in a <a rel=\"mw:WikiLink\" href=\"/wiki/lead\" title=\"lead\">leading</a> <a rel=\"mw:WikiLink\" href=\"/wiki/role\" title=\"role\">role</a>.",
+          "parsedExamples": [
+            {
+              "example": "Many Hollywood <b>stars</b> attended the launch party."
+            }
+          ],
+          "examples": [
+            "Many Hollywood <b>stars</b> attended the launch party."
+          ]
+        },
+        {
+          "definition": "An exceptionally <a rel=\"mw:WikiLink\" href=\"/wiki/talent\" title=\"talent\">talented</a> or <a rel=\"mw:WikiLink\" href=\"/wiki/famous\" title=\"famous\">famous</a> person, often in a specific field; a <a rel=\"mw:WikiLink\" href=\"/wiki/celebrity\" title=\"celebrity\">celebrity</a>.",
+          "parsedExamples": [
+            {
+              "example": "His teacher tells us he is a <b>star</b> pupil."
+            }
+          ],
+          "examples": [
+            "His teacher tells us he is a <b>star</b> pupil."
+          ]
+        },
+        {
+          "definition": "An <a rel=\"mw:WikiLink\" href=\"/wiki/asterisk\" title=\"asterisk\">asterisk</a> (<a rel=\"mw:WikiLink\" href=\"/wiki/*\" title=\"*\">*</a>) or <a rel=\"mw:WikiLink\" href=\"/wiki/symbol\" title=\"symbol\">symbol</a> (★)."
+        },
+        {
+          "definition": "A <a rel=\"mw:WikiLink\" href=\"/wiki/symbol\" title=\"symbol\">symbol</a> used to rate <a rel=\"mw:WikiLink\" href=\"/wiki/hotel\" title=\"hotel\">hotels</a>, <a rel=\"mw:WikiLink\" href=\"/wiki/film\" title=\"film\">films</a>, etc. with a higher number of stars denoting better quality."
+        },
+        {
+          "definition": "A simple dance, or part of a dance, where a group of four dancers each put their right or left hand in the middle and turn around in a circle. You call them right-hand stars or left-hand stars, depending on the hand which is in the middle."
+        },
+        {
+          "definition": "A <a rel=\"mw:WikiLink\" href=\"/wiki/planet\" title=\"planet\">planet</a> supposed to <a rel=\"mw:WikiLink\" href=\"/wiki/influence\" title=\"influence\">influence</a> one's <a rel=\"mw:WikiLink\" href=\"/wiki/destiny\" title=\"destiny\">destiny</a>.",
+          "parsedExamples": [
+            {
+              "example": "What's in the <b>stars</b> for you today? Find out in our horoscope."
+            }
+          ],
+          "examples": [
+            "What's in the <b>stars</b> for you today? Find out in our horoscope."
+          ]
+        },
+        {
+          "definition": "A star-shaped <a rel=\"mw:WikiLink\" href=\"/wiki/ornament\" title=\"ornament\">ornament</a> worn on the breast to indicate rank or honour."
+        },
+        {
+          "definition": "A composition of <a rel=\"mw:WikiLink\" href=\"/wiki/combustible\" title=\"combustible\">combustible</a> matter used in the heading of rockets, in mines, etc., which, exploding in the air, presents a starlike appearance."
+        }
+      ]
+    },
+    {
+      "partOfSpeech": "Verb",
+      "language": "English",
+      "definitions": [
+        {
+          "definition": "To <a rel=\"mw:WikiLink\" href=\"/wiki/appear\" title=\"appear\">appear</a> as a featured performer or headliner, especially in an entertainment program.",
+          "parsedExamples": [
+            {
+              "example": "She <b>starred</b> in dozens of silent movies."
+            }
+          ],
+          "examples": [
+            "She <b>starred</b> in dozens of silent movies."
+          ]
+        },
+        {
+          "definition": "To <a rel=\"mw:WikiLink\" href=\"/wiki/feature\" title=\"feature\">feature</a> (a performer or a headliner), especially in a movie or an entertainment program.",
+          "parsedExamples": [
+            {
+              "example": "The show <b>stars</b> Calista Flockhart as a high-powered lawyer."
+            }
+          ],
+          "examples": [
+            "The show <b>stars</b> Calista Flockhart as a high-powered lawyer."
+          ]
+        },
+        {
+          "definition": "To mark with a star or <a rel=\"mw:WikiLink\" href=\"/wiki/asterisk\" title=\"asterisk\">asterisk</a>."
+        },
+        {
+          "definition": "To set or adorn with stars, or bright, radiating bodies; to <a rel=\"mw:WikiLink\" href=\"/wiki/bespangle\" title=\"bespangle\">bespangle</a>."
+        },
+        {
+          "definition": "To <a rel=\"mw:WikiLink\" href=\"/wiki/shine\" title=\"shine\">shine</a> like a star."
+        }
+      ]
+    }
+  ],
+  "nl": [
+    {
+      "partOfSpeech": "Adjective",
+      "language": "Dutch",
+      "definitions": [
+        {
+          "definition": "<a rel=\"mw:WikiLink\" href=\"/wiki/stiff\" title=\"stiff\">stiff</a>, <a rel=\"mw:WikiLink\" href=\"/wiki/frozen\" title=\"frozen\">frozen</a>"
+        },
+        {
+          "definition": "<a rel=\"mw:WikiLink\" href=\"/wiki/rigid\" title=\"rigid\">rigid</a>"
+        }
+      ]
+    }
+  ],
+  "fr": [
+    {
+      "partOfSpeech": "Noun",
+      "language": "French",
+      "definitions": [
+        {
+          "definition": "<a rel=\"mw:WikiLink\" href=\"/wiki/star#English\">star</a> <span class=\"gloss-brac\" about=\"#mwt190\" typeof=\"mw:Transclusion\">(</span><span class=\"gloss-content\" about=\"#mwt190\">celebrity</span><span class=\"gloss-brac\" about=\"#mwt190\">)</span>",
+          "parsedExamples": [
+            {
+              "example": "Elle est devenue star.",
+              "translation": "she's become a star."
+            }
+          ],
+          "examples": [
+            "Elle est devenue star."
+          ]
+        }
+      ]
+    }
+  ],
+  "it": [
+    {
+      "partOfSpeech": "Noun",
+      "language": "Italian",
+      "definitions": [
+        {
+          "definition": "<span class=\"Latn\" lang=\"en\" about=\"#mwt200\" typeof=\"mw:Transclusion\"><a rel=\"mw:WikiLink\" href=\"/wiki/star#English\" title=\"star\">star</a></span> <span class=\"gloss-brac\" about=\"#mwt201\" typeof=\"mw:Transclusion\">(</span><span class=\"gloss-content\" about=\"#mwt201\">celebrity</span><span class=\"gloss-brac\" about=\"#mwt201\">)</span>"
+        }
+      ]
+    }
+  ],
+  "mt": [
+    {
+      "partOfSpeech": "Noun",
+      "language": "Maltese",
+      "definitions": [
+        {
+          "definition": "<a rel=\"mw:WikiLink\" href=\"/wiki/veil\" title=\"veil\">veil</a>"
+        }
+      ]
+    }
+  ],
+  "mwl": [
+    {
+      "partOfSpeech": "Verb",
+      "language": "Mirandese",
+      "definitions": [
+        {
+          "definition": "to <a rel=\"mw:WikiLink\" href=\"/wiki/be\" title=\"be\">be</a> (indicates a temporary state)"
+        }
+      ]
+    }
+  ],
+  "other": [
+    {
+      "partOfSpeech": "Noun",
+      "language": "Norwegian Nynorsk",
+      "definitions": [
+        {
+          "definition": "alternative form of <span class=\"Latn\" lang=\"nn\" about=\"#mwt214\" typeof=\"mw:Transclusion\"><a rel=\"mw:WikiLink\" href=\"/wiki/stare#Norwegian_Nynorsk\" title=\"stare\">stare</a></span>"
+        }
+      ]
+    },
+    {
+      "partOfSpeech": "Noun",
+      "language": "Norwegian Nynorsk",
+      "definitions": [
+        {
+          "definition": "<span about=\"#mwt216\"> </span><span class=\"form-of-definition use-with-mention\" about=\"#mwt216\">alternative form of <span class=\"form-of-definition-link\"><i class=\"Latn mention\" lang=\"nn\"><a rel=\"mw:WikiLink\" href=\"/wiki/stær#Norwegian_Nynorsk\" title=\"stær\">stær</a></i></span></span><link rel=\"mw:PageProp/Category\" href=\"./Category:Norwegian_Nynorsk_pre-2012_forms\" about=\"#mwt216\">"
+        }
+      ]
+    },
+    {
+      "partOfSpeech": "Verb",
+      "language": "Sabir",
+      "definitions": [
+        {
+          "definition": "to <a rel=\"mw:WikiLink\" href=\"/wiki/be\" title=\"be\">be</a>"
+        }
+      ]
+    },
+    {
+      "partOfSpeech": "Adjective",
+      "language": "Slovene",
+      "definitions": [
+        {
+          "definition": "<a rel=\"mw:WikiLink\" href=\"/wiki/old\" title=\"old\">old</a>, <a rel=\"mw:WikiLink\" href=\"/wiki/aged\" title=\"aged\">aged</a>",
+          "parsedExamples": [
+            {
+              "example": "<b>Star</b> sem dvajset let.",
+              "translation": "I'm twenty years <b>old</b>."
+            }
+          ],
+          "examples": [
+            "<b>Star</b> sem dvajset let."
+          ]
+        }
+      ]
+    }
+  ],
+  "pt": [
+    {
+      "partOfSpeech": "Verb",
+      "language": "Portuguese",
+      "definitions": [
+        {
+          "definition": "<span class=\"form-of-definition use-with-mention\" about=\"#mwt219\" typeof=\"mw:Transclusion\">Obsolete spelling of <span class=\"form-of-definition-link\"><i class=\"Latn mention\" lang=\"pt\"><a rel=\"mw:WikiLink\" href=\"/wiki/estar#Portuguese\" title=\"estar\">estar</a></i></span></span><link rel=\"mw:PageProp/Category\" href=\"./Category:Portuguese_obsolete_forms#STAR\" about=\"#mwt219\">"
+        }
+      ]
+    }
+  ],
+  "ro": [
+    {
+      "partOfSpeech": "Noun",
+      "language": "Romanian",
+      "definitions": [
+        {
+          "definition": "<span class=\"Latn\" lang=\"en\" about=\"#mwt222\" typeof=\"mw:Transclusion\"><a rel=\"mw:WikiLink\" href=\"/wiki/star#English\" title=\"star\">star</a></span> <span class=\"gloss-brac\" about=\"#mwt223\" typeof=\"mw:Transclusion\">(</span><span class=\"gloss-content\" about=\"#mwt223\">famous person</span><span class=\"gloss-brac\" about=\"#mwt223\">)</span>"
+        }
+      ]
+    }
+  ],
+  "sh": [
+    {
+      "partOfSpeech": "Adjective",
+      "language": "Serbo-Croatian",
+      "definitions": [
+        {
+          "definition": "<a rel=\"mw:WikiLink\" href=\"/wiki/old\" title=\"old\">old</a>"
+        }
+      ]
+    }
+  ],
+  "vec": [
+    {
+      "partOfSpeech": "Verb",
+      "language": "Venetian",
+      "definitions": [
+        {
+          "definition": "To <a rel=\"mw:WikiLink\" href=\"/wiki/stay\" title=\"stay\">stay</a> or <a rel=\"mw:WikiLink\" href=\"/wiki/remain\" title=\"remain\">remain</a>"
+        },
+        {
+          "definition": "To <a rel=\"mw:WikiLink\" href=\"/wiki/live\" title=\"live\">live</a> (somewhere)"
+        }
+      ]
+    }
+  ]
+}
